@@ -1,0 +1,273 @@
+package view;
+
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import controller.Controller;
+import grid.FoodSource;
+import grid.GridNode;
+
+/**
+ * The AntVi SettingsWindow class. This class belongs to the GUI and contains
+ * all interactive elements that have to do with the Simulation.
+ * 
+ * @author Max Ehringhausen
+ *
+ */
+public class SettingsWindow {
+
+	private Controller controller;
+
+	private JFrame frame;
+	private JLabel nestPositionLabel;
+	private JLabel foodGatheredLabel;
+	private JLabel modelTicksLabel;
+	private JPanel mainPanel;
+	private JSlider modelSpeedSlider;
+	private JSlider cellCountSlider;
+	private JSlider pheromoneStrengthSlider;
+	private JSlider pheromoneEvaporationSlider;
+	private JSlider moveRandomizationSlider;
+	private JSpinner antCountInput;
+	private JButton playPauseButton;
+	private JButton displayShortestPathButton;
+
+	private String title;
+	private int width;
+	private int height;
+
+	public SettingsWindow(Controller controller, String title, int width, int height) {
+
+		this.controller = controller;
+		this.title = title;
+		this.width = width;
+		this.height = height;
+
+		createSettingsWindow();
+	}
+
+	/**
+	 * Used for initializing the settings window
+	 */
+	private void createSettingsWindow() {
+
+		// Main JFrame
+		frame = new JFrame(title);
+		frame.setSize(width, height);
+		frame.setIconImage(new ImageIcon("src/cog.png").getImage());
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setResizable(false);
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+
+		mainPanel = new JPanel();
+		frame.add(mainPanel);
+
+		// Grid cell count slider
+		cellCountSlider = new JSlider(10, 90, 20);
+		cellCountSlider.setBorder(BorderFactory.createTitledBorder("Grid Size: 20"));
+		cellCountSlider.setPreferredSize(new Dimension(width - 30, 50));
+		cellCountSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent event) {
+
+				cellCountSlider.setBorder(
+						BorderFactory.createTitledBorder(String.format("Grid Size: %s", cellCountSlider.getValue())));
+
+				if (!cellCountSlider.getValueIsAdjusting()) {
+					controller.getGrid().setCellCount(cellCountSlider.getValue());
+				}
+			}
+		});
+		mainPanel.add(cellCountSlider);
+
+		// Simulation speed slider
+		modelSpeedSlider = new JSlider(1, 30, 30);
+		modelSpeedSlider.setBorder(BorderFactory.createTitledBorder("Simulation Ticks/s: 30"));
+		modelSpeedSlider.setPreferredSize(new Dimension(width - 30, 50));
+		modelSpeedSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent event) {
+
+				modelSpeedSlider.setBorder(BorderFactory
+						.createTitledBorder(String.format("Simulation Ticks/s: %s", modelSpeedSlider.getValue())));
+
+				if (!modelSpeedSlider.getValueIsAdjusting()) {
+					controller.setModelSpeed(modelSpeedSlider.getValue());
+				}
+			}
+		});
+		mainPanel.add(modelSpeedSlider);
+
+		// Pheromone strength slider
+		pheromoneStrengthSlider = new JSlider(1, 300, 60);
+		pheromoneStrengthSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Strength: 6,0"));
+		pheromoneStrengthSlider.setPreferredSize(new Dimension(width - 30, 50));
+		pheromoneStrengthSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent event) {
+
+				double value = (double) pheromoneStrengthSlider.getValue() / 10D;
+				pheromoneStrengthSlider
+						.setBorder(BorderFactory.createTitledBorder(String.format("Pheromone Strength: %.1f", value)));
+
+				if (!pheromoneStrengthSlider.getValueIsAdjusting()) {
+					controller.getModel().setPheromoneStrength(value);
+				}
+			}
+		});
+		mainPanel.add(pheromoneStrengthSlider);
+
+		// Pheromone evaporation speed slider
+		pheromoneEvaporationSlider = new JSlider(1, 1000, 150);
+		pheromoneEvaporationSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Evaporation Speed: 0,150"));
+		pheromoneEvaporationSlider.setPreferredSize(new Dimension(width - 30, 50));
+		pheromoneEvaporationSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent event) {
+
+				double value = (double) pheromoneEvaporationSlider.getValue() / 1000D;
+				pheromoneEvaporationSlider.setBorder(
+						BorderFactory.createTitledBorder(String.format("Pheromone Evaporation Speed: %.3f", value)));
+
+				if (!pheromoneEvaporationSlider.getValueIsAdjusting()) {
+					controller.getModel().setEvaporationSpeed(value);
+				}
+			}
+		});
+		mainPanel.add(pheromoneEvaporationSlider);
+
+		// Movement randomization slider
+		moveRandomizationSlider = new JSlider(0, 100, 10);
+		moveRandomizationSlider.setBorder(BorderFactory.createTitledBorder("Random Movement Chance: 10 %"));
+		moveRandomizationSlider.setPreferredSize(new Dimension(width - 30, 50));
+		moveRandomizationSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent event) {
+
+				double value = (double) moveRandomizationSlider.getValue() / 100D;
+				moveRandomizationSlider.setBorder(BorderFactory
+						.createTitledBorder(String.format("Random Movement Chance: %.0f %%", value * 100)));
+
+				if (!moveRandomizationSlider.getValueIsAdjusting()) {
+					controller.getModel().setRandomTurnChance(value);
+				}
+			}
+		});
+		mainPanel.add(moveRandomizationSlider);
+
+		// Ant count spinner
+		antCountInput = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
+		antCountInput.setPreferredSize(new Dimension(width / 3 - 10, 50));
+		antCountInput.setBorder(BorderFactory.createTitledBorder("Ant Count:"));
+		antCountInput.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent event) {
+				controller.getModel().setAntCount((int) antCountInput.getValue());
+			}
+		});
+		mainPanel.add(antCountInput);
+
+		// Nest position label
+		nestPositionLabel = new JLabel("0 / 0", SwingConstants.CENTER);
+		nestPositionLabel.setBorder(BorderFactory.createTitledBorder("Nest Position:"));
+		nestPositionLabel.setPreferredSize(new Dimension(width / 3 - 10, 50));
+		mainPanel.add(nestPositionLabel);
+
+		// Food gathered label
+		foodGatheredLabel = new JLabel("0", SwingConstants.CENTER);
+		foodGatheredLabel.setBorder(BorderFactory.createTitledBorder("Food Gathered:"));
+		foodGatheredLabel.setPreferredSize(new Dimension(width / 3 - 10, 50));
+		mainPanel.add(foodGatheredLabel);
+
+		// Model ticks label
+		modelTicksLabel = new JLabel("0", SwingConstants.CENTER);
+		modelTicksLabel.setBorder(BorderFactory.createTitledBorder("Model Ticks:"));
+		modelTicksLabel.setPreferredSize(new Dimension(width / 3 - 10, 50));
+		mainPanel.add(modelTicksLabel);
+
+		// Play/Pause Button
+		playPauseButton = new JButton("Play Simulation");
+		playPauseButton.setPreferredSize(new Dimension(width / 2 - 10, 80));
+		playPauseButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				if (controller.isModelRunning()) {
+					controller.setModelRunning(false);
+					playPauseButton.setText("Play Simulation");
+				} else {
+					controller.setModelRunning(true);
+					playPauseButton.setText("Pause Simulation");
+				}
+
+			}
+		});
+		mainPanel.add(playPauseButton);
+
+		displayShortestPathButton = new JButton("Show Shortest Path(s)");
+		displayShortestPathButton.setPreferredSize(new Dimension(width / 2 - 10, 80));
+		displayShortestPathButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				// Reset previous paths
+				controller.getPathfinding().findAllNeighbours();
+
+				int startX = controller.getGrid().getNestPos().x;
+				int startY = controller.getGrid().getNestPos().y;
+				int cellCount = controller.getGrid().getCellCount();
+				GridNode[][] nodes = controller.getGrid().getNodes();
+
+				for (int x = 0; x < cellCount; x++) {
+					for (int y = 0; y < cellCount; y++) {
+
+						if (nodes[x][y] instanceof FoodSource) {
+
+							int targetX = x;
+							int targetY = y;
+							controller.getPathfinding().findPath(startX, startY, targetX, targetY);
+						}
+					}
+				}
+			}
+		});
+		mainPanel.add(displayShortestPathButton);
+
+	}
+
+	public JFrame getFrame() {
+		return frame;
+	}
+
+	public JLabel getNestPositionLabel() {
+		return nestPositionLabel;
+	}
+
+	public JSpinner getAntCountInput() {
+		return antCountInput;
+	}
+
+	public JLabel getFoodGatheredLabel() {
+		return foodGatheredLabel;
+	}
+
+	public JLabel getModelTicksLabel() {
+		return modelTicksLabel;
+	}
+
+	public JPanel getMainPanel() {
+		return mainPanel;
+	}
+
+	public JSlider getPheromoneStrengthSlider() {
+		return pheromoneStrengthSlider;
+	}
+
+}
