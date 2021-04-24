@@ -176,6 +176,9 @@ public class Ant {
 		return lookingAt;
 	}
 
+	/**
+	 * Turns the Ant by 180°.
+	 */
 	public void turnAround() {
 		switch (facing) {
 		case UP:
@@ -206,7 +209,7 @@ public class Ant {
 	}
 
 	/**
-	 * Turns the ant into a given direction.<br>
+	 * Turns the ant to face a given direction.<br>
 	 * 0 = UP<br>
 	 * 1 = DOWN<br>
 	 * 2 = LEFT<br>
@@ -280,8 +283,8 @@ public class Ant {
 	 * 
 	 * @param pheromone   the ID of the pheromone (0-7)
 	 * @param nodes       a list of GridNodes to check
-	 * @param lookForNest whether a Nest node should be preferred if found,
-	 *                    otherwise FoodSources are preferred
+	 * @param lookForNest whether a Nest node should always be preferred, prefers
+	 *                    FoodSource nodes if false
 	 * @return the GridNode with the highest concentration of the given pheromone, a
 	 *         random GridNode from the list if they are all the same.
 	 */
@@ -309,8 +312,8 @@ public class Ant {
 	 * 
 	 * @param pheromone   the ID of the pheromone (0-7)
 	 * @param nodes       a list of GridNodes to check
-	 * @param lookForNest whether a Nest node should be preferred if found,
-	 *                    otherwise FoodSources are preferred
+	 * @param lookForNest whether a Nest node should always be preferred, prefers
+	 *                    FoodSource nodes if false
 	 * @return the GridNode with the lowest concentration of the given pheromone, a
 	 *         random GridNode from the list if they are all the same.
 	 */
@@ -338,7 +341,7 @@ public class Ant {
 	 * @param pheromone   the pheromone used for making a decision
 	 * @param nodes       a list of nodes from which should be picked
 	 * @param lookForNest whether a Nest node should always be preferred, prefers
-	 *                    FoodSource if false
+	 *                    FoodSource nodes if false
 	 * @return the node that was picked.
 	 */
 	public GridNode getNodeByChance(int pheromone, List<GridNode> nodes, boolean lookForNest) {
@@ -353,7 +356,7 @@ public class Ant {
 			chanceList.add(new ObjectWithPercentage<>(gn, pheromoneSaturation));
 			totalPercentages += pheromoneSaturation;
 		}
-
+		
 		double chance = totalPercentages * random.nextDouble();
 		double sum = 0;
 		for (int i = 0; i < chanceList.size(); i++) {

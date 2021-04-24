@@ -73,6 +73,7 @@ public class Test extends Model {
 				// If the nest is reached, set carrying food to false
 				if (getGrid().getNode(ant.getPosition()) instanceof Nest) {
 					ant.setCarryingFood(false);
+					ant.turnAround();
 					increaseFoodGathered();
 				}
 
@@ -83,6 +84,7 @@ public class Test extends Model {
 				// If food is reached, set carrying food to true
 				if (getGrid().getNode(ant.getPosition()) instanceof FoodSource) {
 					ant.setCarryingFood(true);
+					ant.turnAround();
 				}
 			}
 		}
