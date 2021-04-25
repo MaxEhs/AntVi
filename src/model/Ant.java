@@ -108,8 +108,8 @@ public class Ant {
 	}
 
 	/**
-	 * Finds the three GridNodes in front of an Ant based on the direction it is
-	 * facing.
+	 * Finds the five GridNodes in front ant to the sides of an Ant based on the
+	 * direction it is facing.
 	 * 
 	 * @return a List of GridNodes that are walkable and in front of the Ant
 	 */
@@ -117,57 +117,81 @@ public class Ant {
 
 		ArrayList<GridNode> lookingAt = new ArrayList<>();
 		Point left = null;
+		Point leftFront = null;
 		Point front = null;
+		Point rightFront = null;
 		Point right = null;
 
 		switch (facing) {
 		case UP:
-			left = new Point(position.x - 1, position.y - 1);
-			front = new Point(position.x, position.y - 1);
-			right = new Point(position.x + 1, position.y - 1);
-			break;
-		case DOWN:
-			left = new Point(position.x + 1, position.y + 1);
-			front = new Point(position.x, position.y + 1);
-			right = new Point(position.x - 1, position.y + 1);
-			break;
-		case LEFT:
-			left = new Point(position.x - 1, position.y + 1);
-			front = new Point(position.x - 1, position.y);
-			right = new Point(position.x - 1, position.y - 1);
-			break;
-		case RIGHT:
-			left = new Point(position.x + 1, position.y - 1);
-			front = new Point(position.x + 1, position.y);
-			right = new Point(position.x + 1, position.y + 1);
-			break;
-		case UPLEFT:
 			left = new Point(position.x - 1, position.y);
-			front = new Point(position.x - 1, position.y - 1);
-			right = new Point(position.x, position.y - 1);
-			break;
-		case UPRIGHT:
-			left = new Point(position.x, position.y - 1);
-			front = new Point(position.x + 1, position.y - 1);
+			leftFront = new Point(position.x - 1, position.y - 1);
+			front = new Point(position.x, position.y - 1);
+			rightFront = new Point(position.x + 1, position.y - 1);
 			right = new Point(position.x + 1, position.y);
 			break;
-		case DOWNLEFT:
-			left = new Point(position.x, position.y + 1);
-			front = new Point(position.x - 1, position.y + 1);
+		case DOWN:
+			left = new Point(position.x + 1, position.y);
+			leftFront = new Point(position.x + 1, position.y + 1);
+			front = new Point(position.x, position.y + 1);
+			rightFront = new Point(position.x - 1, position.y + 1);
 			right = new Point(position.x - 1, position.y);
 			break;
-		case DOWNRIGHT:
-			left = new Point(position.x + 1, position.y);
-			front = new Point(position.x + 1, position.y + 1);
+		case LEFT:
+			left = new Point(position.x, position.y + 1);
+			leftFront = new Point(position.x - 1, position.y + 1);
+			front = new Point(position.x - 1, position.y);
+			rightFront = new Point(position.x - 1, position.y - 1);
+			right = new Point(position.x, position.y - 1);
+			break;
+		case RIGHT:
+			left = new Point(position.x, position.y - 1);
+			leftFront = new Point(position.x + 1, position.y - 1);
+			front = new Point(position.x + 1, position.y);
+			rightFront = new Point(position.x + 1, position.y + 1);
 			right = new Point(position.x, position.y + 1);
+			break;
+		case UPLEFT:
+			left = new Point(position.x - 1, position.y + 1);
+			leftFront = new Point(position.x - 1, position.y);
+			front = new Point(position.x - 1, position.y - 1);
+			rightFront = new Point(position.x, position.y - 1);
+			right = new Point(position.x + 1, position.y - 1);
+			break;
+		case UPRIGHT:
+			left = new Point(position.x - 1, position.y - 1);
+			leftFront = new Point(position.x, position.y - 1);
+			front = new Point(position.x + 1, position.y - 1);
+			rightFront = new Point(position.x + 1, position.y);
+			right = new Point(position.x + 1, position.y + 1);
+			break;
+		case DOWNLEFT:
+			left = new Point(position.x + 1, position.y + 1);
+			leftFront = new Point(position.x, position.y + 1);
+			front = new Point(position.x - 1, position.y + 1);
+			rightFront = new Point(position.x - 1, position.y);
+			right = new Point(position.x - 1, position.y - 1);
+			break;
+		case DOWNRIGHT:
+			left = new Point(position.x + 1, position.y - 1);
+			leftFront = new Point(position.x + 1, position.y);
+			front = new Point(position.x + 1, position.y + 1);
+			rightFront = new Point(position.x, position.y + 1);
+			right = new Point(position.x - 1, position.y + 1);
 			break;
 		}
 
 		if (model.getGrid().getNode(left) != null && !model.getGrid().getNode(left).isBlocking()) {
 			lookingAt.add(model.getGrid().getNode(left));
 		}
+		if (model.getGrid().getNode(leftFront) != null && !model.getGrid().getNode(leftFront).isBlocking()) {
+			lookingAt.add(model.getGrid().getNode(leftFront));
+		}
 		if (model.getGrid().getNode(front) != null && !model.getGrid().getNode(front).isBlocking()) {
 			lookingAt.add(model.getGrid().getNode(front));
+		}
+		if (model.getGrid().getNode(rightFront) != null && !model.getGrid().getNode(rightFront).isBlocking()) {
+			lookingAt.add(model.getGrid().getNode(rightFront));
 		}
 		if (model.getGrid().getNode(right) != null && !model.getGrid().getNode(right).isBlocking()) {
 			lookingAt.add(model.getGrid().getNode(right));
