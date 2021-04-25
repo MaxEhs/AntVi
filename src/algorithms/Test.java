@@ -1,6 +1,7 @@
 package algorithms;
 
 import java.util.List;
+import java.util.Random;
 
 import controller.Controller;
 import grid.FoodSource;
@@ -18,6 +19,8 @@ import model.Model;
  */
 public class Test extends Model {
 
+	private static final Random random = new Random();
+
 	private final static int PHEROMONE_ONE = 0;
 	private final static int PHEROMONE_TWO = 1;
 
@@ -31,12 +34,10 @@ public class Test extends Model {
 		for (Ant ant : getAnts()) {
 
 			List<GridNode> lookingAt = ant.getLookingAt();
-			int randomIndex = Ant.random.nextInt(7);
-			double randomChance = Ant.random.nextDouble();
 
 			// Randomly move based on a percent chance
-			if (randomChance <= getRandomTurnChance()) {
-				ant.turnTowards(randomIndex);
+			if (random.nextDouble() <= getRandomTurnChance()) {
+				ant.turnTowards(random.nextInt(8));
 				continue;
 			}
 
@@ -50,12 +51,12 @@ public class Test extends Model {
 			if (ant.isCarryingFood()) {
 
 				// Move to node with highest pheromone one
-				bestChoice = ant.getNodeByChance(PHEROMONE_ONE, lookingAt, ant.isCarryingFood());
+				bestChoice = ant.getNodeByChance(PHEROMONE_ONE, lookingAt, random, ant.isCarryingFood());
 
 			} else {
 
 				// Move to node with highest pheromone two
-				bestChoice = ant.getNodeByChance(PHEROMONE_TWO, lookingAt, ant.isCarryingFood());
+				bestChoice = ant.getNodeByChance(PHEROMONE_ONE, lookingAt, random, ant.isCarryingFood());
 
 			}
 			ant.moveTo(bestChoice);

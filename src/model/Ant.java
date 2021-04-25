@@ -35,7 +35,7 @@ public class Ant {
 	private boolean carryingFood;
 	private boolean followingTrail;
 	private Facing facing;
-	public static final Random random = new Random();
+	private static final Random rand = new Random();
 
 	public enum Facing {
 		UP, DOWN, LEFT, RIGHT, UPLEFT, UPRIGHT, DOWNLEFT, DOWNRIGHT
@@ -52,7 +52,7 @@ public class Ant {
 
 		// Initially face a random direction
 		final List<Facing> directions = Collections.unmodifiableList(Arrays.asList(Facing.values()));
-		this.facing = directions.get(random.nextInt(directions.size()));
+		this.facing = directions.get(rand.nextInt(directions.size()));
 	}
 
 	public void render(Graphics2D g) {
@@ -290,7 +290,7 @@ public class Ant {
 	 */
 	public GridNode getNodeWithHighestConcentration(int pheromone, List<GridNode> nodes, boolean lookForNest) {
 
-		GridNode target = nodes.get(random.nextInt(nodes.size()));
+		GridNode target = nodes.get(rand.nextInt(nodes.size()));
 
 		// Find node with highest pheromone or Nest or FoodSource
 		for (GridNode gn : nodes) {
@@ -319,7 +319,7 @@ public class Ant {
 	 */
 	public GridNode getNodeWithLowestConcentration(int pheromone, List<GridNode> nodes, boolean lookForNest) {
 
-		GridNode target = nodes.get(random.nextInt(nodes.size()));
+		GridNode target = nodes.get(rand.nextInt(nodes.size()));
 
 		// Find node with lowest pheromone or Nest or FoodSource
 		for (GridNode gn : nodes) {
@@ -340,11 +340,12 @@ public class Ant {
 	 * 
 	 * @param pheromone   the pheromone used for making a decision
 	 * @param nodes       a list of nodes from which should be picked
+	 * @param random      a Random object to generate some random numbers
 	 * @param lookForNest whether a Nest node should always be preferred, prefers
 	 *                    FoodSource nodes if false
 	 * @return the node that was picked.
 	 */
-	public GridNode getNodeByChance(int pheromone, List<GridNode> nodes, boolean lookForNest) {
+	public GridNode getNodeByChance(int pheromone, List<GridNode> nodes, Random random, boolean lookForNest) {
 
 		GridNode target = null;
 		ArrayList<ObjectWithPercentage<GridNode>> chanceList = new ArrayList<>();
@@ -356,7 +357,8 @@ public class Ant {
 			chanceList.add(new ObjectWithPercentage<>(gn, pheromoneSaturation));
 			totalPercentages += pheromoneSaturation;
 		}
-		
+
+		Collections.shuffle(chanceList);
 		double chance = totalPercentages * random.nextDouble();
 		double sum = 0;
 		for (int i = 0; i < chanceList.size(); i++) {
@@ -366,7 +368,7 @@ public class Ant {
 			}
 		}
 		if (target == null) {
-			target = chanceList.get(chanceList.size() - 1).getObject();
+			target = chanceList.get(random.nextInt(chanceList.size())).getObject();
 		}
 
 		return target;
