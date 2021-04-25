@@ -25,16 +25,20 @@ public abstract class Model {
 	private int antCount;
 	private double pheromoneStrength;
 	private double evaporationSpeed;
+	private double pheromoneFallOff;
 	private double randomTurnChance;
 	private int foodGathered;
 
 	protected Model(Controller controller, Grid grid) {
 		this.controller = controller;
 		this.grid = grid;
+
+		// DEFAULT VALUES
 		antCount = 0;
 		pheromoneStrength = 6.0;
-		evaporationSpeed = 0.15;
-		randomTurnChance = 0.1;
+		evaporationSpeed = 0.20;
+		randomTurnChance = 0.08;
+		pheromoneFallOff = 50;
 	}
 
 	public synchronized void tick() {
@@ -87,12 +91,24 @@ public abstract class Model {
 		this.evaporationSpeed = evaporationSpeed;
 	}
 
-	public double getRandomTurnChance() {
+	public double getRandomMoveChance() {
 		return randomTurnChance;
 	}
 
 	public void setRandomTurnChance(double randomTurnChance) {
 		this.randomTurnChance = randomTurnChance;
+	}
+
+	public double getPheromoneFallOff() {
+		return pheromoneFallOff;
+	}
+
+	public void setPheromoneFallOff(double pheromoneFallOff) {
+		if (pheromoneFallOff < 1) {
+			this.pheromoneFallOff = Integer.MAX_VALUE;
+		} else {
+			this.pheromoneFallOff = 100 - pheromoneFallOff;
+		}
 	}
 
 	public List<Ant> getAnts() {

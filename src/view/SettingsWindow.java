@@ -41,6 +41,7 @@ public class SettingsWindow {
 	private JSlider cellCountSlider;
 	private JSlider pheromoneStrengthSlider;
 	private JSlider pheromoneEvaporationSlider;
+	private JSlider pheromoneFallOffSlider;
 	private JSlider moveRandomizationSlider;
 	private JSpinner antCountInput;
 	private JButton playPauseButton;
@@ -112,7 +113,7 @@ public class SettingsWindow {
 		mainPanel.add(modelSpeedSlider);
 
 		// Pheromone strength slider
-		pheromoneStrengthSlider = new JSlider(1, 300, 60);
+		pheromoneStrengthSlider = new JSlider(0, 500, 60);
 		pheromoneStrengthSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Strength: 6,0"));
 		pheromoneStrengthSlider.setPreferredSize(new Dimension(width - 30, 50));
 		pheromoneStrengthSlider.addChangeListener(new ChangeListener() {
@@ -130,8 +131,8 @@ public class SettingsWindow {
 		mainPanel.add(pheromoneStrengthSlider);
 
 		// Pheromone evaporation speed slider
-		pheromoneEvaporationSlider = new JSlider(1, 1000, 150);
-		pheromoneEvaporationSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Evaporation Speed: 0,150"));
+		pheromoneEvaporationSlider = new JSlider(0, 1000, 200);
+		pheromoneEvaporationSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Evaporation Speed: 0,200"));
 		pheromoneEvaporationSlider.setPreferredSize(new Dimension(width - 30, 50));
 		pheromoneEvaporationSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent event) {
@@ -147,9 +148,27 @@ public class SettingsWindow {
 		});
 		mainPanel.add(pheromoneEvaporationSlider);
 
+		// Pheromone falloff slider
+		pheromoneFallOffSlider = new JSlider(0, 100, 50);
+		pheromoneFallOffSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Falloff Ratio: 50 %"));
+		pheromoneFallOffSlider.setPreferredSize(new Dimension(width - 30, 50));
+		pheromoneFallOffSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent event) {
+
+				double value = (double) pheromoneFallOffSlider.getValue();
+				pheromoneFallOffSlider.setBorder(
+						BorderFactory.createTitledBorder(String.format("Pheromone Falloff Ratio: %.0f %%", value)));
+
+				if (!pheromoneFallOffSlider.getValueIsAdjusting()) {
+					controller.getModel().setPheromoneFallOff(value);
+				}
+			}
+		});
+		mainPanel.add(pheromoneFallOffSlider);
+
 		// Movement randomization slider
-		moveRandomizationSlider = new JSlider(0, 100, 10);
-		moveRandomizationSlider.setBorder(BorderFactory.createTitledBorder("Random Movement Chance: 10 %"));
+		moveRandomizationSlider = new JSlider(0, 100, 8);
+		moveRandomizationSlider.setBorder(BorderFactory.createTitledBorder("Random Movement Chance: 8 %"));
 		moveRandomizationSlider.setPreferredSize(new Dimension(width - 30, 50));
 		moveRandomizationSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent event) {

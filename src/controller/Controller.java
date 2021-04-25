@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 
-import algorithms.Test;
+import algorithms.Test2;
 import grid.Grid;
 import model.Model;
 import utils.AStarPathfinding;
@@ -44,7 +44,7 @@ public class Controller implements Runnable {
 	public Controller(int width, int height) {
 		view = new View(this, width, height);
 		grid = new Grid(this, DEFAULT_GRID_CELL_COUNT, height);
-		model = new Test(this, grid);
+		model = new Test2(this, grid);
 		keyManager = new KeyManager();
 		pathfinding = new AStarPathfinding(grid);
 		mouseManager = new MouseManager(grid);

@@ -12,13 +12,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Predicate;
 
 import javax.imageio.ImageIO;
 
 import grid.FoodSource;
 import grid.GridNode;
 import grid.Nest;
-import utils.ObjectWithPercentage;
+import grid.Tile;
+import utils.GridNodeWithPercentage;
 
 /**
  * The AntVi Ant class. It contains methods to create Ant behaviour with, as
@@ -34,6 +36,7 @@ public class Ant {
 	private Point position;
 	private boolean carryingFood;
 	private boolean followingTrail;
+	private int stepsWalked;
 	private Facing facing;
 	private static final Random rand = new Random();
 
@@ -108,12 +111,81 @@ public class Ant {
 	}
 
 	/**
-	 * Finds the five GridNodes in front ant to the sides of an Ant based on the
+	 * Finds the three GridNodes in front of an Ant based on the direction it is
+	 * facing.
+	 * 
+	 * @return a List of GridNodes that are walkable and in front of the Ant
+	 */
+	public List<GridNode> getThreeInFront() {
+
+		ArrayList<GridNode> lookingAt = new ArrayList<>();
+		Point leftFront = null;
+		Point front = null;
+		Point rightFront = null;
+
+		switch (facing) {
+		case UP:
+			leftFront = new Point(position.x - 1, position.y - 1);
+			front = new Point(position.x, position.y - 1);
+			rightFront = new Point(position.x + 1, position.y - 1);
+			break;
+		case DOWN:
+			leftFront = new Point(position.x + 1, position.y + 1);
+			front = new Point(position.x, position.y + 1);
+			rightFront = new Point(position.x - 1, position.y + 1);
+			break;
+		case LEFT:
+			leftFront = new Point(position.x - 1, position.y + 1);
+			front = new Point(position.x - 1, position.y);
+			rightFront = new Point(position.x - 1, position.y - 1);
+			break;
+		case RIGHT:
+			leftFront = new Point(position.x + 1, position.y - 1);
+			front = new Point(position.x + 1, position.y);
+			rightFront = new Point(position.x + 1, position.y + 1);
+			break;
+		case UPLEFT:
+			leftFront = new Point(position.x - 1, position.y);
+			front = new Point(position.x - 1, position.y - 1);
+			rightFront = new Point(position.x, position.y - 1);
+			break;
+		case UPRIGHT:
+			leftFront = new Point(position.x, position.y - 1);
+			front = new Point(position.x + 1, position.y - 1);
+			rightFront = new Point(position.x + 1, position.y);
+			break;
+		case DOWNLEFT:
+			leftFront = new Point(position.x, position.y + 1);
+			front = new Point(position.x - 1, position.y + 1);
+			rightFront = new Point(position.x - 1, position.y);
+			break;
+		case DOWNRIGHT:
+			leftFront = new Point(position.x + 1, position.y);
+			front = new Point(position.x + 1, position.y + 1);
+			rightFront = new Point(position.x, position.y + 1);
+			break;
+		}
+
+		if (model.getGrid().getNode(leftFront) != null && !model.getGrid().getNode(leftFront).isBlocking()) {
+			lookingAt.add(model.getGrid().getNode(leftFront));
+		}
+		if (model.getGrid().getNode(front) != null && !model.getGrid().getNode(front).isBlocking()) {
+			lookingAt.add(model.getGrid().getNode(front));
+		}
+		if (model.getGrid().getNode(rightFront) != null && !model.getGrid().getNode(rightFront).isBlocking()) {
+			lookingAt.add(model.getGrid().getNode(rightFront));
+		}
+
+		return lookingAt;
+	}
+
+	/**
+	 * Finds the five GridNodes in front and at the sides of an Ant based on the
 	 * direction it is facing.
 	 * 
 	 * @return a List of GridNodes that are walkable and in front of the Ant
 	 */
-	public List<GridNode> getLookingAt() {
+	public List<GridNode> getFiveInFront() {
 
 		ArrayList<GridNode> lookingAt = new ArrayList<>();
 		Point left = null;
@@ -243,7 +315,7 @@ public class Ant {
 	 * 6 = DOWNLEFT<br>
 	 * 7 = DOWNRIGHT
 	 * 
-	 * @param direction as integer
+	 * @param direction as Integer
 	 */
 	public void turnTowards(int direction) {
 		if (direction >= 0 && direction < Facing.values().length) {
@@ -305,14 +377,14 @@ public class Ant {
 	 * Finds the GridNode with the highest concentration of a given pheromone from a
 	 * list of GridNodes.
 	 * 
-	 * @param pheromone   the ID of the pheromone (0-7)
-	 * @param nodes       a list of GridNodes to check
-	 * @param lookForNest whether a Nest node should always be preferred, prefers
-	 *                    FoodSource nodes if false
+	 * @param pheromone         the ID of the pheromone (0-7)
+	 * @param nodes             a list of GridNodes to check
+	 * @param preferNestAndFood whether a Nest or FoodSource node should always be
+	 *                          preferred
 	 * @return the GridNode with the highest concentration of the given pheromone, a
 	 *         random GridNode from the list if they are all the same.
 	 */
-	public GridNode getNodeWithHighestConcentration(int pheromone, List<GridNode> nodes, boolean lookForNest) {
+	public GridNode getNodeWithHighestConcentration(int pheromone, List<GridNode> nodes, boolean preferNestAndFood) {
 
 		GridNode target = nodes.get(rand.nextInt(nodes.size()));
 
@@ -321,7 +393,7 @@ public class Ant {
 			if (target.getPheromoneAmount(pheromone) < gn.getPheromoneAmount(pheromone)) {
 				target = gn;
 			}
-			if ((lookForNest && gn instanceof Nest) || (!lookForNest && gn instanceof FoodSource)) {
+			if (preferNestAndFood && !(gn instanceof Tile)) {
 				target = gn;
 				break;
 			}
@@ -334,14 +406,14 @@ public class Ant {
 	 * Finds the GridNode with the lowest concentration of a given pheromone from a
 	 * list of GridNodes.
 	 * 
-	 * @param pheromone   the ID of the pheromone (0-7)
-	 * @param nodes       a list of GridNodes to check
-	 * @param lookForNest whether a Nest node should always be preferred, prefers
-	 *                    FoodSource nodes if false
+	 * @param pheromone         the ID of the pheromone (0-7)
+	 * @param nodes             a list of GridNodes to check
+	 * @param preferNestAndFood whether a Nest or FoodSource node should always be
+	 *                          preferred
 	 * @return the GridNode with the lowest concentration of the given pheromone, a
 	 *         random GridNode from the list if they are all the same.
 	 */
-	public GridNode getNodeWithLowestConcentration(int pheromone, List<GridNode> nodes, boolean lookForNest) {
+	public GridNode getNodeWithLowestConcentration(int pheromone, List<GridNode> nodes, boolean preferNestAndFood) {
 
 		GridNode target = nodes.get(rand.nextInt(nodes.size()));
 
@@ -350,7 +422,7 @@ public class Ant {
 			if (target.getPheromoneAmount(pheromone) > gn.getPheromoneAmount(pheromone)) {
 				target = gn;
 			}
-			if ((lookForNest && gn instanceof Nest) || (!lookForNest && gn instanceof FoodSource)) {
+			if (preferNestAndFood && !(gn instanceof Tile)) {
 				target = gn;
 				break;
 			}
@@ -362,40 +434,46 @@ public class Ant {
 	 * Picks a node by chance. Nodes with the highest concentration of a given
 	 * pheromone have the biggest chance.
 	 * 
-	 * @param pheromone   the pheromone used for making a decision
-	 * @param nodes       a list of nodes from which should be picked
-	 * @param random      a Random object to generate some random numbers
-	 * @param lookForNest whether a Nest node should always be preferred, prefers
-	 *                    FoodSource nodes if false
+	 * @param pheromone         the pheromone used for making a decision
+	 * @param nodes             a list of nodes from which should be picked
+	 * @param random            a Random object to generate some random numbers
+	 * @param preferNestAndFood whether a Nest or FoodSource node should always be
+	 *                          preferred
 	 * @return the node that was picked.
 	 */
-	public GridNode getNodeByChance(int pheromone, List<GridNode> nodes, Random random, boolean lookForNest) {
+	public GridNode getNodeByProbablility(int pheromone, List<GridNode> nodes, Random random,
+			boolean preferNestAndFood) {
 
-		GridNode target = null;
-		ArrayList<ObjectWithPercentage<GridNode>> chanceList = new ArrayList<>();
+		ArrayList<GridNodeWithPercentage> chanceList = new ArrayList<>();
 		double totalPercentages = 0;
 
-		// Roll for a Node by chance, based on pheromone concentrations
+		// Add all given nodes to the chanceList and add up their probabilities
 		for (GridNode gn : nodes) {
+
+			if (preferNestAndFood && !(gn instanceof Tile)) {
+				return gn;
+			}
+
 			double pheromoneSaturation = gn.getPheromoneAmount(pheromone) / GridNode.MAX_PHEROMONE;
-			chanceList.add(new ObjectWithPercentage<>(gn, pheromoneSaturation));
+			chanceList.add(new GridNodeWithPercentage(gn, pheromoneSaturation));
 			totalPercentages += pheromoneSaturation;
 		}
 
 		Collections.shuffle(chanceList);
+		GridNode result = null;
+
+		// Roll for a number based on the cumulative probabilities
 		double chance = totalPercentages * random.nextDouble();
 		double sum = 0;
 		for (int i = 0; i < chanceList.size(); i++) {
 			sum += chanceList.get(i).getPercentage();
 			if (sum >= chance) {
-				target = chanceList.get(i).getObject();
+				result = chanceList.get(i).getGridNode();
+				break;
 			}
 		}
-		if (target == null) {
-			target = chanceList.get(random.nextInt(chanceList.size())).getObject();
-		}
 
-		return target;
+		return result;
 	}
 
 	/**
@@ -445,6 +523,22 @@ public class Ant {
 
 	public void setFollowingTrail(boolean followingTrail) {
 		this.followingTrail = followingTrail;
+	}
+
+	public int getStepsWalked() {
+		return stepsWalked;
+	}
+
+	public void increaseStepsWalked() {
+		stepsWalked++;
+	}
+
+	public void resetStepsWalked() {
+		stepsWalked = 0;
+	}
+
+	public void setStepsWalked(int stepsWalked) {
+		this.stepsWalked = stepsWalked;
 	}
 
 }

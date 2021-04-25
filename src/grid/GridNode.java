@@ -21,7 +21,7 @@ public abstract class GridNode {
 	 * "kinds" of pheromones based on the index.
 	 */
 	private double[] pheromoneAmount;
-	public static final double MAX_PHEROMONE = 60.0D;
+	public static final double MAX_PHEROMONE = 100.0D;
 
 	// Used for A* path finding
 	private GridNode previousNode;

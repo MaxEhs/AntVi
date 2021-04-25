@@ -17,14 +17,13 @@ import model.Model;
  * @author Max Ehringhausen
  *
  */
-public class Test extends Model {
+public class Test2 extends Model {
 
 	private static final Random random = new Random();
 
 	private static final int PHEROMONE_ONE = 0;
-	private static final int PHEROMONE_TWO = 1;
 
-	public Test(Controller controller, Grid grid) {
+	public Test2(Controller controller, Grid grid) {
 		super(controller, grid);
 	}
 
@@ -58,18 +57,9 @@ public class Test extends Model {
 				}
 			}
 
-			GridNode bestChoice = null;
-			if (ant.isCarryingFood()) {
+			// Probably move to node with highest pheromone
+			GridNode bestChoice = ant.getNodeByProbablility(PHEROMONE_ONE, lookingAt, random, true);
 
-				// Probably move to node with highest pheromone one
-				bestChoice = ant.getNodeByProbablility(PHEROMONE_ONE, lookingAt, random, true);
-
-			} else {
-
-				// Probably move to node with highest pheromone two
-				bestChoice = ant.getNodeByProbablility(PHEROMONE_TWO, lookingAt, random, true);
-
-			}
 			ant.moveTo(bestChoice);
 			ant.increaseStepsWalked();
 		}
@@ -81,8 +71,8 @@ public class Test extends Model {
 		for (Ant ant : getAnts()) {
 			if (ant.isCarryingFood()) {
 
-				// Deposit pheromone two on current node
-				getGrid().getNode(ant.getPosition()).increasePheromoneBy(PHEROMONE_TWO,
+				// Deposit pheromone on current node
+				getGrid().getNode(ant.getPosition()).increasePheromoneBy(PHEROMONE_ONE,
 						getPheromoneStrength() / (ant.getStepsWalked() / getPheromoneFallOff()));
 
 				// If the nest is reached, set carrying food to false
@@ -98,7 +88,7 @@ public class Test extends Model {
 				}
 
 			} else {
-				// Deposit pheromone one
+				// Deposit pheromone on current node
 				getGrid().getNode(ant.getPosition()).increasePheromoneBy(PHEROMONE_ONE,
 						getPheromoneStrength() / (ant.getStepsWalked() / getPheromoneFallOff()));
 
