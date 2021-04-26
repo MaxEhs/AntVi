@@ -12,13 +12,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Predicate;
 
 import javax.imageio.ImageIO;
 
-import grid.FoodSource;
 import grid.GridNode;
-import grid.Nest;
 import grid.Tile;
 import utils.GridNodeWithPercentage;
 
@@ -35,7 +32,6 @@ public class Ant {
 	BufferedImage icon;
 	private Point position;
 	private boolean carryingFood;
-	private boolean followingTrail;
 	private int stepsWalked;
 	private Facing facing;
 	private static final Random rand = new Random();
@@ -517,24 +513,20 @@ public class Ant {
 		this.carryingFood = carryingFood;
 	}
 
-	public boolean isFollowingTrail() {
-		return followingTrail;
-	}
-
-	public void setFollowingTrail(boolean followingTrail) {
-		this.followingTrail = followingTrail;
-	}
-
 	public int getStepsWalked() {
 		return stepsWalked;
 	}
 
 	public void increaseStepsWalked() {
-		stepsWalked++;
+		if (model.isUsingFallOff()) {
+			stepsWalked++;
+		} else {
+			stepsWalked = 1;
+		}
 	}
 
 	public void resetStepsWalked() {
-		stepsWalked = 0;
+		stepsWalked = 1;
 	}
 
 	public void setStepsWalked(int stepsWalked) {

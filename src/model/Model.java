@@ -27,6 +27,7 @@ public abstract class Model {
 	private double evaporationSpeed;
 	private double pheromoneFallOff;
 	private double randomTurnChance;
+	private boolean usingFallOff;
 	private int foodGathered;
 
 	protected Model(Controller controller, Grid grid) {
@@ -105,10 +106,15 @@ public abstract class Model {
 
 	public void setPheromoneFallOff(double pheromoneFallOff) {
 		if (pheromoneFallOff < 1) {
-			this.pheromoneFallOff = Integer.MAX_VALUE;
+			usingFallOff = false;
 		} else {
+			usingFallOff = true;
 			this.pheromoneFallOff = 100 - pheromoneFallOff;
 		}
+	}
+
+	public boolean isUsingFallOff() {
+		return usingFallOff;
 	}
 
 	public List<Ant> getAnts() {

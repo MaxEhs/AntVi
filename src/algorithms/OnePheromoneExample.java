@@ -17,13 +17,13 @@ import model.Model;
  * @author Max Ehringhausen
  *
  */
-public class Test2 extends Model {
+public class OnePheromoneExample extends Model {
 
 	private static final Random random = new Random();
 
 	private static final int PHEROMONE_ONE = 0;
 
-	public Test2(Controller controller, Grid grid) {
+	public OnePheromoneExample(Controller controller, Grid grid) {
 		super(controller, grid);
 	}
 
