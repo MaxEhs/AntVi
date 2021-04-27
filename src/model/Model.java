@@ -37,9 +37,9 @@ public abstract class Model {
 		// DEFAULT VALUES
 		antCount = 0;
 		pheromoneStrength = 6.0;
-		evaporationSpeed = 0.20;
+		evaporationSpeed = 0.40;
 		randomTurnChance = 0.08;
-		pheromoneFallOff = 50;
+		setPheromoneFallOff(75.0);
 	}
 
 	public synchronized void tick() {
@@ -104,7 +104,7 @@ public abstract class Model {
 		return pheromoneFallOff;
 	}
 
-	public void setPheromoneFallOff(double pheromoneFallOff) {
+	public final void setPheromoneFallOff(double pheromoneFallOff) {
 		if (pheromoneFallOff < 1) {
 			usingFallOff = false;
 		} else {
@@ -138,7 +138,7 @@ public abstract class Model {
 					difference++;
 				}
 			} else if (difference > 0) {
-				// Remove the oldest Ants
+				// Remove the oldest Ants first
 				while (difference > 0) {
 					ants.poll();
 					difference--;
@@ -163,6 +163,11 @@ public abstract class Model {
 
 	public void increaseFoodGathered() {
 		foodGathered++;
+		controller.getView().getSettingsWindow().getFoodGatheredLabel().setText(String.format("%s", foodGathered));
+	}
+
+	public void setFoodGathered(int value) {
+		foodGathered = value;
 		controller.getView().getSettingsWindow().getFoodGatheredLabel().setText(String.format("%s", foodGathered));
 	}
 }

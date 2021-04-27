@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 
-import algorithms.OnePheromoneExample;
+import algorithms.TwoPheromoneExample;
 import grid.Grid;
 import model.Model;
 import utils.AStarPathfinding;
@@ -44,7 +44,7 @@ public class Controller implements Runnable {
 	public Controller(int width, int height) {
 		view = new View(this, width, height);
 		grid = new Grid(this, DEFAULT_GRID_CELL_COUNT, height);
-		model = new OnePheromoneExample(this, grid);
+		model = new TwoPheromoneExample(this, grid);
 		keyManager = new KeyManager();
 		pathfinding = new AStarPathfinding(grid);
 		mouseManager = new MouseManager(grid);

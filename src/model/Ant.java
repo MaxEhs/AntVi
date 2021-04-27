@@ -437,7 +437,7 @@ public class Ant {
 	 *                          preferred
 	 * @return the node that was picked.
 	 */
-	public GridNode getNodeByProbablility(int pheromone, List<GridNode> nodes, Random random,
+	public GridNode getNodeByProbablility(int pheromone, Iterable<GridNode> nodes, Random random,
 			boolean preferNestAndFood) {
 
 		ArrayList<GridNodeWithPercentage> chanceList = new ArrayList<>();

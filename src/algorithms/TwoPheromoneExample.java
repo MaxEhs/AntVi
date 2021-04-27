@@ -90,6 +90,7 @@ public class TwoPheromoneExample extends Model {
 					ant.setCarryingFood(false);
 					ant.resetStepsWalked();
 					increaseFoodGathered();
+					ant.turnAround();
 				}
 
 				// If another FoodSource is visited, reset stepsWalked
@@ -106,6 +107,7 @@ public class TwoPheromoneExample extends Model {
 				if (getGrid().getNode(ant.getPosition()) instanceof FoodSource) {
 					ant.setCarryingFood(true);
 					ant.resetStepsWalked();
+					ant.turnAround();
 				}
 
 				// If the Nest is visited again, reset stepsWalked

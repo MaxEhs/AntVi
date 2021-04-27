@@ -130,6 +130,7 @@ public class Grid {
 			calculateOffset();
 			initialize();
 			controller.getPathfinding().findAllNeighbours();
+			controller.getView().getSettingsWindow().getNestPositionLabel().setText("0 / 0");
 		}
 	}
 
