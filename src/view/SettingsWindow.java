@@ -93,7 +93,7 @@ public class SettingsWindow {
 		mainPanel.add(howTo);
 
 		// Grid cell count slider
-		cellCountSlider = new JSlider(10, 90, 20);
+		cellCountSlider = new JSlider(10, 100, 20);
 		cellCountSlider.setBorder(BorderFactory.createTitledBorder("Grid Size: 20"));
 		cellCountSlider.setPreferredSize(new Dimension(width - 30, 50));
 		cellCountSlider.addChangeListener(new ChangeListener() {
@@ -182,7 +182,7 @@ public class SettingsWindow {
 		mainPanel.add(moveRandomizationSlider);
 
 		// Ant count spinner
-		antCountInput = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
+		antCountInput = new JSpinner(new SpinnerNumberModel(0, 0, 200, 1));
 		antCountInput.setPreferredSize(new Dimension(width / 2 - 20, 50));
 		antCountInput.setBorder(BorderFactory.createTitledBorder("Ant Count:"));
 		antCountInput.addChangeListener(new ChangeListener() {
