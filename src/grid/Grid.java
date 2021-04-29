@@ -168,11 +168,13 @@ public class Grid {
 	 * @return the GridNode from the specified coordinates, otherwise null if
 	 *         coordinates are out of bounds.
 	 */
-	public GridNode getNode(int x, int y) {
-		try {
-			return nodes[x][y];
-		} catch (ArrayIndexOutOfBoundsException e) {
-			return null;
+	public synchronized GridNode getNode(int x, int y) {
+		synchronized (nodes) {
+			try {
+				return nodes[x][y];
+			} catch (ArrayIndexOutOfBoundsException e) {
+				return null;
+			}
 		}
 	}
 
@@ -183,11 +185,13 @@ public class Grid {
 	 * @return the GridNode from the specified Point, otherwise null if the Point is
 	 *         out of bounds.
 	 */
-	public GridNode getNode(Point point) {
-		try {
-			return nodes[point.x][point.y];
-		} catch (ArrayIndexOutOfBoundsException e) {
-			return null;
+	public synchronized GridNode getNode(Point point) {
+		synchronized (nodes) {
+			try {
+				return nodes[point.x][point.y];
+			} catch (ArrayIndexOutOfBoundsException e) {
+				return null;
+			}
 		}
 	}
 

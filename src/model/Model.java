@@ -44,20 +44,22 @@ public abstract class Model {
 
 	public synchronized void tick() {
 		synchronized (ants) {
-			// Removing ants that are outside of the Grid
-			Queue<Ant> tempQueue = new LinkedList<>();
-			while (!ants.isEmpty()) {
-				Ant tempAnt = ants.poll();
-				if (grid.getNode(tempAnt.getPosition()) != null) {
-					tempQueue.add(tempAnt);
+			synchronized (grid) {
+				// Removing ants that are outside of the Grid
+				Queue<Ant> tempQueue = new LinkedList<>();
+				while (!ants.isEmpty()) {
+					Ant tempAnt = ants.poll();
+					if (grid.getNode(tempAnt.getPosition()) != null) {
+						tempQueue.add(tempAnt);
+					}
 				}
-			}
-			controller.getView().getSettingsWindow().getAntCountInput().setValue(tempQueue.size());
-			ants = tempQueue;
+				controller.getView().getSettingsWindow().getAntCountInput().setValue(tempQueue.size());
+				ants = tempQueue;
 
-			generateSolutions();
-			daemonActions();
-			pheromoneUpdate();
+				generateSolutions();
+				daemonActions();
+				pheromoneUpdate();
+			}
 		}
 
 	}
@@ -121,7 +123,7 @@ public abstract class Model {
 		return new ArrayList<>(ants);
 	}
 
-	public synchronized int getAntCount() {
+	public int getAntCount() {
 		return antCount;
 	}
 
