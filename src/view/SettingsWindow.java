@@ -218,7 +218,7 @@ public class SettingsWindow {
 
 				if (controller.isModelRunning()) {
 					controller.setModelRunning(false);
-					playPauseButton.setText("Play Simulation");
+					playPauseButton.setText("Play");
 				} else {
 					controller.setModelRunning(true);
 					playPauseButton.setText("Pause");
