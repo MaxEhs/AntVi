@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 
-import algorithms.TwoPheromoneExample;
+import algorithms.*;
 import grid.Grid;
 import model.Model;
 import utils.AStarPathfinding;

@@ -35,7 +35,7 @@ public class OnePheromoneExample extends Model {
 			List<GridNode> lookingAt = ant.getThreeInFront();
 
 			// Randomly move or turn based on a percent chance
-			if (random.nextDouble() <= getRandomMoveChance()) {
+			if (random.nextDouble() < getRandomMoveChance()) {
 
 				if (lookingAt.size() > 3) {
 					List<GridNode> surrounding = ant.getSurroundingNodes();
@@ -47,13 +47,11 @@ public class OnePheromoneExample extends Model {
 				}
 			}
 
-			// Ant is in a dead-end or stuck - first let her check more of her surroundings;
-			// if that does not help, do a 180° flip
+			// Ant is in a dead-end or stuck - let her check more of her surroundings.
 			if (lookingAt.isEmpty()) {
 				lookingAt = ant.getFiveInFront();
 				if (lookingAt.isEmpty()) {
-					ant.turnAround();
-					continue;
+					lookingAt = ant.getSurroundingNodes();
 				}
 			}
 
@@ -84,9 +82,9 @@ public class OnePheromoneExample extends Model {
 				}
 
 				// If another FoodSource is visited, reset stepsWalked
-				if (getGrid().getNode(ant.getPosition()) instanceof FoodSource) {
-					ant.resetStepsWalked();
-				}
+//				if (getGrid().getNode(ant.getPosition()) instanceof FoodSource) {
+//					ant.resetStepsWalked();
+//				}
 
 			} else {
 				// Deposit pheromone on current node
@@ -101,9 +99,9 @@ public class OnePheromoneExample extends Model {
 				}
 
 				// If the Nest is visited again, reset stepsWalked
-				if (getGrid().getNode(ant.getPosition()) instanceof Nest) {
-					ant.resetStepsWalked();
-				}
+//				if (getGrid().getNode(ant.getPosition()) instanceof Nest) {
+//					ant.resetStepsWalked();
+//				}
 			}
 		}
 	}

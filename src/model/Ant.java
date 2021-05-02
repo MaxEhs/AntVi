@@ -9,8 +9,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
@@ -33,6 +36,7 @@ public class Ant {
 	private Point position;
 	private boolean carryingFood;
 	private int stepsWalked;
+	private Queue<GridNode> lastWalked = new LinkedList<>();
 	private Facing facing;
 	private static final Random rand = new Random();
 
@@ -63,7 +67,7 @@ public class Ant {
 		int offset = model.getGrid().getOffset();
 		double rotation = Math.toRadians(0);
 
-		// All +45° because the icon is tilted
+		// All +45° because the icon is tilted (oops)
 		switch (facing) {
 		case UP:
 			rotation = Math.toRadians(45.0);
@@ -110,7 +114,8 @@ public class Ant {
 	 * Finds the three GridNodes in front of an Ant based on the direction it is
 	 * facing.
 	 * 
-	 * @return a List of GridNodes that are walkable and in front of the Ant
+	 * @return a List with a maximum of three GridNodes that are walkable and in
+	 *         front of the Ant
 	 */
 	public List<GridNode> getThreeInFront() {
 
@@ -172,6 +177,7 @@ public class Ant {
 			lookingAt.add(model.getGrid().getNode(rightFront));
 		}
 
+		lookingAt.removeAll(lastWalked);
 		return lookingAt;
 	}
 
@@ -179,7 +185,8 @@ public class Ant {
 	 * Finds the five GridNodes in front and at the sides of an Ant based on the
 	 * direction it is facing.
 	 * 
-	 * @return a List of GridNodes that are walkable and in front of the Ant
+	 * @return a List with a maximum of five GridNodes that are walkable and in
+	 *         front of the Ant
 	 */
 	public List<GridNode> getFiveInFront() {
 
@@ -265,6 +272,7 @@ public class Ant {
 			lookingAt.add(model.getGrid().getNode(right));
 		}
 
+		lookingAt.removeAll(lastWalked);
 		return lookingAt;
 	}
 
@@ -324,6 +332,13 @@ public class Ant {
 		if (gn == null) {
 			return;
 		}
+
+		// Ant remembers the last 10 GridNodes it walked on
+		// Small short-term memory
+		if (lastWalked.size() > 9) {
+			lastWalked.poll();
+		}
+		lastWalked.add(gn);
 
 		Point targetPos = gn.getGridPosition();
 
@@ -386,12 +401,14 @@ public class Ant {
 
 		// Find node with highest pheromone or Nest or FoodSource
 		for (GridNode gn : nodes) {
-			if (target.getPheromoneAmount(pheromone) < gn.getPheromoneAmount(pheromone)) {
-				target = gn;
-			}
+
 			if (preferNestAndFood && !(gn instanceof Tile)) {
 				target = gn;
 				break;
+			}
+
+			if (target.getPheromoneAmount(pheromone) < gn.getPheromoneAmount(pheromone)) {
+				target = gn;
 			}
 		}
 
@@ -415,12 +432,14 @@ public class Ant {
 
 		// Find node with lowest pheromone or Nest or FoodSource
 		for (GridNode gn : nodes) {
-			if (target.getPheromoneAmount(pheromone) > gn.getPheromoneAmount(pheromone)) {
-				target = gn;
-			}
+
 			if (preferNestAndFood && !(gn instanceof Tile)) {
 				target = gn;
 				break;
+			}
+
+			if (target.getPheromoneAmount(pheromone) > gn.getPheromoneAmount(pheromone)) {
+				target = gn;
 			}
 		}
 		return target;
@@ -437,7 +456,7 @@ public class Ant {
 	 *                          preferred
 	 * @return the node that was picked.
 	 */
-	public GridNode getNodeByProbablility(int pheromone, Iterable<GridNode> nodes, Random random,
+	public GridNode getNodeByProbablility(int pheromone, Collection<GridNode> nodes, Random random,
 			boolean preferNestAndFood) {
 
 		ArrayList<GridNodeWithPercentage> chanceList = new ArrayList<>();
@@ -453,6 +472,7 @@ public class Ant {
 			double pheromoneSaturation = gn.getPheromoneAmount(pheromone) / GridNode.MAX_PHEROMONE;
 			chanceList.add(new GridNodeWithPercentage(gn, pheromoneSaturation));
 			totalPercentages += pheromoneSaturation;
+
 		}
 
 		Collections.shuffle(chanceList);
@@ -475,7 +495,7 @@ public class Ant {
 	/**
 	 * Gets unobstructed nodes around the Ant.
 	 * 
-	 * @return a List of walkable GridNodes adjacent to the Ant.
+	 * @return a List of up to eight walkable GridNodes adjacent to the Ant.
 	 */
 	public List<GridNode> getSurroundingNodes() {
 		ArrayList<GridNode> list = new ArrayList<>();
@@ -486,7 +506,13 @@ public class Ant {
 			}
 		}
 
-		return list;
+		list.removeAll(lastWalked);
+		if (!list.isEmpty()) {
+			return list;
+		} else {
+			lastWalked.clear();
+			return getSurroundingNodes();
+		}
 	}
 
 	public Facing getFacing() {
@@ -511,10 +537,17 @@ public class Ant {
 
 	public void setCarryingFood(boolean carryingFood) {
 		this.carryingFood = carryingFood;
+
+		// Also clear short-term memory
+		lastWalked.clear();
 	}
 
 	public int getStepsWalked() {
 		return stepsWalked;
+	}
+
+	public Queue<GridNode> getLastWalked() {
+		return lastWalked;
 	}
 
 	public void increaseStepsWalked() {

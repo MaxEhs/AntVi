@@ -45,6 +45,7 @@ public class SettingsWindow {
 	private JSlider pheromoneEvaporationSlider;
 	private JSlider pheromoneFallOffSlider;
 	private JSlider moveRandomizationSlider;
+	private JSlider maximumPheromoneSlider;
 	private JSpinner antCountInput;
 	private JButton playPauseButton;
 	private JButton resetButton;
@@ -180,6 +181,24 @@ public class SettingsWindow {
 			}
 		});
 		mainPanel.add(moveRandomizationSlider);
+
+		// Maximum pheromone saturation slider
+		maximumPheromoneSlider = new JSlider(1, 1000, 50);
+		maximumPheromoneSlider.setBorder(BorderFactory.createTitledBorder("Maximum Pheromone per Cell: 50"));
+		maximumPheromoneSlider.setPreferredSize(new Dimension(width - 30, 50));
+		maximumPheromoneSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent event) {
+
+				int value = maximumPheromoneSlider.getValue();
+				maximumPheromoneSlider.setBorder(
+						BorderFactory.createTitledBorder(String.format("Maximum Pheromone per Cell: %d", value)));
+
+				if (!maximumPheromoneSlider.getValueIsAdjusting()) {
+					GridNode.MAX_PHEROMONE = value;
+				}
+			}
+		});
+		mainPanel.add(maximumPheromoneSlider);
 
 		// Ant count spinner
 		antCountInput = new JSpinner(new SpinnerNumberModel(0, 0, 200, 1));
