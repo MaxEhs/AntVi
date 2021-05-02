@@ -57,7 +57,7 @@ public class Tile extends GridNode {
 			// Calculate hue based on index
 			float hue = 0.49F + 0.1F * index;
 			// Calculate saturation based on pheromone amount
-			float saturation = (float) (getPheromoneAmount(index) / GridNode.MAX_PHEROMONE);
+			float saturation = (float) (getPheromoneAmount(index) / GridNode.getMaxPheromone());
 			// Set the color of this tile
 			g.setColor(Color.getHSBColor(hue, saturation, 1));
 		}

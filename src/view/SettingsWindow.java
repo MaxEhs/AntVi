@@ -187,7 +187,7 @@ public class SettingsWindow {
 						BorderFactory.createTitledBorder(String.format("Maximum Pheromone per Cell: %d", value)));
 
 				if (!maximumPheromoneSlider.getValueIsAdjusting()) {
-					GridNode.MAX_PHEROMONE = value;
+					GridNode.setMaxPheromone(value);
 				}
 			}
 		});
