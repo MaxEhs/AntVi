@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -18,7 +19,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import controller.Controller;
-import grid.FoodSource;
 import grid.GridNode;
 
 /**
@@ -147,8 +147,12 @@ public class SettingsWindow {
 			public void stateChanged(ChangeEvent event) {
 
 				double value = (double) pheromoneFallOffSlider.getValue();
-				pheromoneFallOffSlider.setBorder(
-						BorderFactory.createTitledBorder(String.format("Pheromone Falloff Ratio: %.0f %%", value)));
+				if (value <= 0) {
+					pheromoneFallOffSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Falloff Ratio: OFF"));
+				} else {
+					pheromoneFallOffSlider.setBorder(
+							BorderFactory.createTitledBorder(String.format("Pheromone Falloff Ratio: %.0f %%", value)));
+				}
 
 				if (!pheromoneFallOffSlider.getValueIsAdjusting()) {
 					controller.getModel().setPheromoneFallOff(value);
@@ -176,8 +180,8 @@ public class SettingsWindow {
 		mainPanel.add(moveRandomizationSlider);
 
 		// Maximum pheromone saturation slider
-		maximumPheromoneSlider = new JSlider(1, 1000, 150);
-		maximumPheromoneSlider.setBorder(BorderFactory.createTitledBorder("Maximum Pheromone per Cell: 150"));
+		maximumPheromoneSlider = new JSlider(1, 1000, 100);
+		maximumPheromoneSlider.setBorder(BorderFactory.createTitledBorder("Maximum Pheromone per Cell: 100"));
 		maximumPheromoneSlider.setPreferredSize(new Dimension(width - 30, 50));
 		maximumPheromoneSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent event) {
@@ -313,20 +317,16 @@ public class SettingsWindow {
 				// Reset previous paths
 				controller.getPathfinding().findAllNeighbours();
 
-				int startX = controller.getGrid().getNestPositions().get(0).x; // TODO
-				int startY = controller.getGrid().getNestPositions().get(0).y;
-				int cellCount = controller.getGrid().getCellCount();
-				GridNode[][] nodes = controller.getGrid().getNodes();
+				// For each Nest find the shortest path(s) to all FoodSources
+				for (Point nestPos : controller.getGrid().getNestPositions()) {
+					for (Point foodPos : controller.getGrid().getFoodPositions()) {
 
-				for (int x = 0; x < cellCount; x++) {
-					for (int y = 0; y < cellCount; y++) {
+						int startX = foodPos.x;
+						int startY = foodPos.y;
 
-						if (nodes[x][y] instanceof FoodSource) {
-
-							int targetX = x;
-							int targetY = y;
-							controller.getPathfinding().findPath(startX, startY, targetX, targetY);
-						}
+						int targetX = nestPos.x;
+						int targetY = nestPos.y;
+						controller.getPathfinding().findPath(startX, startY, targetX, targetY);
 					}
 				}
 			}
