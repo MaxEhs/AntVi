@@ -38,6 +38,7 @@ public class Tile extends GridNode {
 		if (hovering && foodSourceButton) {
 			// Replace this Tile with a new FoodSource
 			grid.setNode(getX(), getY(), new FoodSource(grid, getX(), getY(), cellSize, offset));
+			grid.getFoodPositions().add(getGridPosition());
 		}
 		if (hovering && nestButton) {
 			// Replace this Tile with a Nest

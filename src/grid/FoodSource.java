@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 
 /**
  * The AntVi FoodSource class. One of the three types of GridNodes.
+ * 
  * @author Max Ehringhausen
  *
  */
@@ -30,6 +31,7 @@ public class FoodSource extends GridNode {
 		if (hovering && grid.getController().getKeyManager().keyJustPressed(KeyEvent.VK_F)) {
 			// Remove existing FoodSource
 			grid.setNode(getX(), getY(), new Tile(grid, getX(), getY(), grid.getCellSize(), grid.getOffset()));
+			grid.getFoodPositions().remove(getGridPosition());
 		}
 	}
 

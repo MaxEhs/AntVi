@@ -23,6 +23,7 @@ public class Grid {
 	private int cellSize;
 	private int initialCellSize;
 	private ArrayList<Point> nestPositions;
+	private ArrayList<Point> foodPositions;
 	private GridNode[][] nodes;
 
 	/**
@@ -36,6 +37,7 @@ public class Grid {
 		this.controller = controller;
 		nodes = new GridNode[cellCount][cellCount];
 		nestPositions = new ArrayList<>();
+		foodPositions = new ArrayList<>();
 		this.size = size;
 		this.cellCount = cellCount;
 		cellSize = size / cellCount;
@@ -52,6 +54,7 @@ public class Grid {
 		synchronized (nodes) {
 			nodes = new GridNode[cellCount][cellCount];
 			nestPositions = new ArrayList<>();
+			foodPositions = new ArrayList<>();
 
 			for (int x = 0; x < cellCount; x++) {
 				for (int y = 0; y < cellCount; y++) {
@@ -217,5 +220,9 @@ public class Grid {
 
 	public List<Point> getNestPositions() {
 		return nestPositions;
+	}
+
+	public ArrayList<Point> getFoodPositions() {
+		return foodPositions;
 	}
 }
