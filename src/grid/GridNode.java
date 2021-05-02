@@ -7,8 +7,9 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 /**
- * The AntVi GridNode class. Every type of Node extends this class. It contains Grid
- * logic, A*-pathfinding elements, as well as methods and fields needed by ACO.
+ * The AntVi GridNode class. Every type of Node extends this class. It contains
+ * Grid logic, A*-pathfinding elements, as well as methods and fields needed by
+ * ACO.
  * 
  * @author Max Ehringhausen
  *
@@ -21,7 +22,7 @@ public abstract class GridNode {
 	 * "kinds" of pheromones based on the index.
 	 */
 	private double[] pheromoneAmount;
-	public static double MAX_PHEROMONE = 100.0D;
+	public static double MAX_PHEROMONE = 150.0D;
 
 	// Used for A* path finding
 	private GridNode previousNode;

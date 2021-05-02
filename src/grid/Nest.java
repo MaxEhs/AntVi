@@ -2,6 +2,7 @@ package grid;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 
 /**
  * The AntVi Nest class. One of the three types of GridNodes.
@@ -26,8 +27,12 @@ public class Nest extends GridNode {
 
 	@Override
 	public void tick() {
-		// Nothing to do.
-
+		if (grid.getNestPositions().size() > 1 && hovering
+				&& grid.getController().getKeyManager().keyJustPressed(KeyEvent.VK_N)) {
+			// Remove existing Nest, but always keep at least one
+			grid.setNode(getX(), getY(), new Tile(grid, getX(), getY(), grid.getCellSize(), grid.getOffset()));
+			grid.getNestPositions().remove(getGridPosition());
+		}
 	}
 
 	@Override

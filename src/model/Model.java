@@ -136,7 +136,7 @@ public abstract class Model {
 			if (difference < 0) {
 				// Ants need to be added
 				while (difference < 0) {
-					ants.add(new Ant(this, new Point(grid.getNestPos())));
+					ants.add(new Ant(this, new Point(grid.getNestPositions().get(0))));
 					difference++;
 				}
 			} else if (difference > 0) {

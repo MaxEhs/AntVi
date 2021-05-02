@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 import controller.Controller;
 
@@ -50,6 +51,7 @@ public class Grid {
 	private synchronized void initialize() {
 		synchronized (nodes) {
 			nodes = new GridNode[cellCount][cellCount];
+			nestPositions = new ArrayList<>();
 
 			for (int x = 0; x < cellCount; x++) {
 				for (int y = 0; y < cellCount; y++) {
@@ -59,9 +61,9 @@ public class Grid {
 				}
 			}
 
-			// Placing Nest at (0/0)
+			// Placing first Nest at (0/0)
 			nodes[0][0] = new Nest(this, 0, 0, cellSize, offset);
-			nestPositions.setLocation(0, 0);
+			nestPositions.add(nodes[0][0].getGridPosition());
 		}
 	}
 
@@ -213,14 +215,7 @@ public class Grid {
 		return offset;
 	}
 
-	public Point getNestPos() {
+	public List<Point> getNestPositions() {
 		return nestPositions;
 	}
-
-	public void setNestPos(int x, int y) {
-		nestPositions.setLocation(x, y);
-		controller.getView().getSettingsWindow().getNestPositionLabel().setText(String.format("%s / %s", x, y));
-		controller.getPathfinding().findAllNeighbours();
-	}
-
 }

@@ -32,8 +32,6 @@ public class Tile extends GridNode {
 		// Collect variables
 		int cellSize = grid.getCellSize();
 		int offset = grid.getOffset();
-		int nestX = grid.getNestPos().x;
-		int nestY = grid.getNestPos().y;
 		boolean foodSourceButton = grid.getController().getKeyManager().keyJustPressed(KeyEvent.VK_F);
 		boolean nestButton = grid.getController().getKeyManager().keyJustPressed(KeyEvent.VK_N);
 
@@ -42,11 +40,10 @@ public class Tile extends GridNode {
 			grid.setNode(getX(), getY(), new FoodSource(grid, getX(), getY(), cellSize, offset));
 		}
 		if (hovering && nestButton) {
-			// Replace this Tile with the Nest (there can only be one Nest)
+			// Replace this Tile with a Nest
 			grid.setNode(getX(), getY(), new Nest(grid, getX(), getY(), cellSize, offset));
-			grid.setNode(nestX, nestY, new Tile(grid, nestX, nestY, cellSize, offset));
-			// Update nest position
-			grid.setNestPos(getX(), getY());
+			// Update nest position list
+			grid.getNestPositions().add(getGridPosition());
 		}
 	}
 
