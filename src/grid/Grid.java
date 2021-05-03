@@ -201,6 +201,12 @@ public class Grid {
 		}
 	}
 
+	/**
+	 * Getter for the two-dimensional Array of GridNodes that make up the Grid.
+	 * 
+	 * @return a two-dimensional Array containing all GridNodes that are currently
+	 *         part of the Grid
+	 */
 	public GridNode[][] getNodes() {
 		return nodes;
 	}
@@ -209,10 +215,13 @@ public class Grid {
 		return controller;
 	}
 
-	public int getSize() {
-		return size;
-	}
-
+	/**
+	 * Getter for the offset in pixels that should be applied to the X and Y of
+	 * everything that is rendered on the Grid. This is used for centering all
+	 * content.
+	 * 
+	 * @return offset in pixels
+	 */
 	public int getOffset() {
 		return offset;
 	}
@@ -221,7 +230,7 @@ public class Grid {
 		return nestPositions;
 	}
 
-	public ArrayList<Point> getFoodPositions() {
+	public List<Point> getFoodPositions() {
 		return foodPositions;
 	}
 }
