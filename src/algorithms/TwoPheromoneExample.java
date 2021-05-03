@@ -33,7 +33,12 @@ public class TwoPheromoneExample extends Model {
 
 		for (Ant ant : getAnts()) {
 
-			List<GridNode> lookingAt = ant.getThreeInFront();
+			List<GridNode> lookingAt;
+			if (isUsingFallOff() && ant.getStepsWalked() == 1) {
+				lookingAt = ant.getFiveInFront();
+			} else {
+				lookingAt = ant.getThreeInFront();
+			}
 
 			// Ant is in a dead-end or stuck - let her check more of her surroundings
 			if (lookingAt.isEmpty()) {
@@ -46,6 +51,7 @@ public class TwoPheromoneExample extends Model {
 			// Randomly move based on a percent chance
 			if (random.nextDouble() < getRandomMoveChance()) {
 				ant.moveTo(lookingAt.get(random.nextInt(lookingAt.size())));
+				ant.increaseStepsWalked();
 				continue;
 			}
 
@@ -53,12 +59,16 @@ public class TwoPheromoneExample extends Model {
 			if (ant.isCarryingFood()) {
 
 				// Probably move to node with highest pheromone one
-				bestChoice = ant.getNodeByProbablility(PHEROMONE_ONE, lookingAt, random, true);
+				// bestChoice = ant.getNodeByProbablility(PHEROMONE_ONE, lookingAt, random,
+				// true);
+				bestChoice = ant.getNodeWithHighestConcentration(PHEROMONE_ONE, lookingAt, true);
 
 			} else {
 
 				// Probably move to node with highest pheromone two
-				bestChoice = ant.getNodeByProbablility(PHEROMONE_TWO, lookingAt, random, true);
+				// bestChoice = ant.getNodeByProbablility(PHEROMONE_TWO, lookingAt, random,
+				// true);
+				bestChoice = ant.getNodeWithHighestConcentration(PHEROMONE_TWO, lookingAt, true);
 
 			}
 			ant.moveTo(bestChoice);
@@ -87,7 +97,6 @@ public class TwoPheromoneExample extends Model {
 				// If another FoodSource is visited, reset stepsWalked
 				if (getGrid().getNode(ant.getPosition()) instanceof FoodSource) {
 					ant.resetStepsWalked();
-					ant.turnAround();
 				}
 
 			} else {
@@ -105,7 +114,6 @@ public class TwoPheromoneExample extends Model {
 				// If the Nest is visited again, reset stepsWalked
 				if (getGrid().getNode(ant.getPosition()) instanceof Nest) {
 					ant.resetStepsWalked();
-					ant.turnAround();
 				}
 			}
 		}
@@ -119,6 +127,13 @@ public class TwoPheromoneExample extends Model {
 				GridNode tempNode = getGrid().getNode(x, y);
 				for (int i = 0; i < tempNode.getPheromones().length; i++) {
 					tempNode.decreasePheromoneBy(i, getEvaporationSpeed());
+
+					// Attempt at dissipation
+					for (GridNode gn : tempNode.getNearbyNodes()) {
+						double temp = (tempNode.getPheromoneAmount(i) / GridNode.getMaxPheromone());
+						gn.increasePheromoneBy(i, temp);
+						tempNode.decreasePheromoneBy(i, temp);
+					}
 				}
 			}
 		}

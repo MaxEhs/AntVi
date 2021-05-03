@@ -36,9 +36,9 @@ public abstract class Model {
 
 		// DEFAULT VALUES
 		antCount = 0;
-		pheromoneStrength = 6.0;
-		evaporationSpeed = 0.40;
-		randomTurnChance = 0.08;
+		pheromoneStrength = 8.0;
+		evaporationSpeed = 0.50;
+		randomTurnChance = 0.15;
 		setPheromoneFallOff(75.0);
 	}
 

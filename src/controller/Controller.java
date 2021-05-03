@@ -1,11 +1,10 @@
 package controller;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 
-import algorithms.*;
+import algorithms.TwoPheromoneExample;
 import grid.Grid;
 import model.Model;
 import utils.AStarPathfinding;
@@ -22,9 +21,9 @@ import view.View;
  */
 public class Controller implements Runnable {
 
-	private static final int DEFAULT_GRID_CELL_COUNT = 20;
+	private static final int DEFAULT_GRID_CELL_COUNT = 30;
 	private static final int RENDER_BUFFERS = 2;
-	private static final int MAXIMUM_FRAMES_PER_SECOND = 30;
+	private static final int MAXIMUM_FRAMES_PER_SECOND = 60;
 
 	private View view;
 	private Grid grid;
@@ -36,7 +35,6 @@ public class Controller implements Runnable {
 	private int modelSpeed = 30;
 	private int modelTicks;
 	private Thread thread;
-	private Graphics2D g;
 
 	private KeyManager keyManager;
 	private MouseManager mouseManager;
@@ -57,37 +55,6 @@ public class Controller implements Runnable {
 		view.getDisplayWindow().getCanvas().addMouseListener(mouseManager);
 		view.getDisplayWindow().getFrame().addMouseMotionListener(mouseManager);
 		view.getDisplayWindow().getCanvas().addMouseMotionListener(mouseManager);
-	}
-
-	private void tick() {
-		keyManager.tick();
-		grid.tick();
-	}
-
-	/**
-	 * Used for rendering each frame
-	 */
-	private void render() {
-
-		BufferStrategy bufferStrategy = view.getDisplayWindow().getCanvas().getBufferStrategy();
-		if (bufferStrategy == null) {
-			view.getDisplayWindow().getCanvas().createBufferStrategy(RENDER_BUFFERS);
-			return;
-		}
-		g = (Graphics2D) bufferStrategy.getDrawGraphics();
-
-		// Clear Screen
-		g.clearRect(0, 0, view.getWidth(), view.getHeight());
-		g.setColor(Color.GRAY);
-		g.fillRect(0, 0, view.getWidth(), view.getHeight());
-
-		// Rendering
-		grid.render(g);
-		pathfinding.render(g);
-		model.render(g);
-
-		bufferStrategy.show();
-		g.dispose();
 	}
 
 	/**
@@ -113,6 +80,7 @@ public class Controller implements Runnable {
 			modelTimer += now - lastTime;
 			lastTime = now;
 
+			// Every one second check if the performance is still good
 			if (timer >= 1_000_000_000) {
 				if (ticks < MAXIMUM_FRAMES_PER_SECOND - 5) {
 					System.out.println("There might be a perfomance problem.");
@@ -121,7 +89,9 @@ public class Controller implements Runnable {
 				timer = 0;
 			}
 
+			// Update the model <modelSpeed> ticks per second
 			if (modelRunning && (modelTimer >= 1_000_000_000 / modelSpeed)) {
+				// Update the model
 				model.tick();
 				modelTicks++;
 				view.getSettingsWindow().getModelTicksLabel().setText(String.format("%s", modelTicks));
@@ -129,7 +99,11 @@ public class Controller implements Runnable {
 			}
 
 			if (delta >= 1) {
-				tick();
+				// Update the Grid
+				keyManager.tick();
+				grid.tick();
+
+				// Render everything
 				render();
 				ticks++;
 				delta--;
@@ -140,7 +114,34 @@ public class Controller implements Runnable {
 	}
 
 	/**
-	 * Thread-safe way of starting the simulation
+	 * Used for rendering the Grid and Model each tick
+	 */
+	private void render() {
+
+		// Use buffered Graphics to avoid any visual stuttering or artifacts
+		BufferStrategy bufferStrategy = view.getDisplayWindow().getCanvas().getBufferStrategy();
+		if (bufferStrategy == null) {
+			view.getDisplayWindow().getCanvas().createBufferStrategy(RENDER_BUFFERS);
+			return;
+		}
+		Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
+
+		// Clear Screen
+		g.clearRect(0, 0, view.getWidth(), view.getHeight());
+		g.setColor(Color.GRAY);
+		g.fillRect(0, 0, view.getWidth(), view.getHeight());
+
+		// Rendering
+		grid.render(g);
+		pathfinding.render(g);
+		model.render(g);
+
+		bufferStrategy.show();
+		g.dispose();
+	}
+
+	/**
+	 * Thread-safe way of starting the program
 	 */
 	public synchronized void start() {
 		if (running) {
@@ -151,10 +152,9 @@ public class Controller implements Runnable {
 		thread.start();
 	}
 
-	public synchronized void setModelRunning(boolean running) {
-		modelRunning = running;
-	}
-
+	/**
+	 * Thread-safe way of stopping the program
+	 */
 	public synchronized void stop() {
 		if (!running) {
 			return;
@@ -167,6 +167,10 @@ public class Controller implements Runnable {
 		}
 	}
 
+	public synchronized void setModelRunning(boolean running) {
+		modelRunning = running;
+	}
+
 	public int getModelTicks() {
 		return modelTicks;
 	}
@@ -175,24 +179,12 @@ public class Controller implements Runnable {
 		modelTicks = x;
 	}
 
-	public Boolean isRunning() {
-		return running;
-	}
-
 	public Grid getGrid() {
 		return grid;
 	}
 
 	public KeyManager getKeyManager() {
 		return keyManager;
-	}
-
-	public MouseManager getMouseManager() {
-		return mouseManager;
-	}
-
-	public Graphics getGraphics() {
-		return g;
 	}
 
 	public View getView() {
@@ -209,10 +201,6 @@ public class Controller implements Runnable {
 
 	public Model getModel() {
 		return model;
-	}
-
-	public int getModelSpeed() {
-		return modelSpeed;
 	}
 
 	public void setModelSpeed(int modelSpeed) {

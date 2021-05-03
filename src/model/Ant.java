@@ -31,6 +31,7 @@ import utils.GridNodeWithPercentage;
 public class Ant {
 
 	private static final Random rand = new Random();
+	private static int shortTermMemorySize = 15;
 	private Model model;
 	private BufferedImage icon;
 	private Point position;
@@ -332,9 +333,9 @@ public class Ant {
 			return;
 		}
 
-		// Ant remembers the last 10 GridNodes it walked on
+		// Ant remembers the last 16 GridNodes it walked on
 		// Small short-term memory
-		if (lastWalked.size() > 9) {
+		if (lastWalked.size() > shortTermMemorySize) {
 			lastWalked.poll();
 		}
 		lastWalked.add(gn);
@@ -543,6 +544,14 @@ public class Ant {
 
 	public int getStepsWalked() {
 		return stepsWalked;
+	}
+
+	public static int getShortTermMemorySize() {
+		return shortTermMemorySize;
+	}
+
+	public static void setShortTermMemorySize(int shortTermMemorySize) {
+		Ant.shortTermMemorySize = shortTermMemorySize;
 	}
 
 	public Queue<GridNode> getLastWalked() {
