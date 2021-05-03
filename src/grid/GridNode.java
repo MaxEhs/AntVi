@@ -7,8 +7,9 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 /**
- * The AntVi GridNode class. Every type of Node extends this class. It contains Grid
- * logic, A*-pathfinding elements, as well as methods and fields needed by ACO.
+ * The AntVi GridNode class. Every type of Node extends this class. It contains
+ * Grid logic, A*-pathfinding elements, as well as methods and fields needed by
+ * ACO.
  * 
  * @author Max Ehringhausen
  *
@@ -20,8 +21,8 @@ public abstract class GridNode {
 	 * This array is initialized with a size of 8, meaning there can be 8 different
 	 * "kinds" of pheromones based on the index.
 	 */
+	private static double maxPheromone = 250.0D;
 	private double[] pheromoneAmount;
-	public static double MAX_PHEROMONE = 100.0D;
 
 	// Used for A* path finding
 	private GridNode previousNode;
@@ -195,6 +196,14 @@ public abstract class GridNode {
 		return pheromoneAmount;
 	}
 
+	public static double getMaxPheromone() {
+		return maxPheromone;
+	}
+
+	public static void setMaxPheromone(double maxPheromone) {
+		GridNode.maxPheromone = maxPheromone;
+	}
+
 	/**
 	 * Gets the index of the pheromone with the highest concentration.
 	 * 
@@ -224,8 +233,8 @@ public abstract class GridNode {
 
 		pheromoneAmount[index] += amount;
 
-		if (pheromoneAmount[index] > MAX_PHEROMONE) {
-			pheromoneAmount[index] = MAX_PHEROMONE;
+		if (pheromoneAmount[index] > getMaxPheromone()) {
+			pheromoneAmount[index] = getMaxPheromone();
 		}
 	}
 

@@ -3,6 +3,8 @@ package grid;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import controller.Controller;
 
@@ -20,7 +22,8 @@ public class Grid {
 	private int cellCount;
 	private int cellSize;
 	private int initialCellSize;
-	private Point nestPos = new Point(0, 0);
+	private ArrayList<Point> nestPositions;
+	private ArrayList<Point> foodPositions;
 	private GridNode[][] nodes;
 
 	/**
@@ -33,6 +36,8 @@ public class Grid {
 
 		this.controller = controller;
 		nodes = new GridNode[cellCount][cellCount];
+		nestPositions = new ArrayList<>();
+		foodPositions = new ArrayList<>();
 		this.size = size;
 		this.cellCount = cellCount;
 		cellSize = size / cellCount;
@@ -48,6 +53,8 @@ public class Grid {
 	private synchronized void initialize() {
 		synchronized (nodes) {
 			nodes = new GridNode[cellCount][cellCount];
+			nestPositions = new ArrayList<>();
+			foodPositions = new ArrayList<>();
 
 			for (int x = 0; x < cellCount; x++) {
 				for (int y = 0; y < cellCount; y++) {
@@ -57,9 +64,9 @@ public class Grid {
 				}
 			}
 
-			// Placing Nest at (0/0)
+			// Placing first Nest at (0/0)
 			nodes[0][0] = new Nest(this, 0, 0, cellSize, offset);
-			nestPos.setLocation(0, 0);
+			nestPositions.add(nodes[0][0].getGridPosition());
 		}
 	}
 
@@ -130,7 +137,6 @@ public class Grid {
 			calculateOffset();
 			initialize();
 			controller.getPathfinding().findAllNeighbours();
-			controller.getView().getSettingsWindow().getNestPositionLabel().setText("0 / 0");
 		}
 	}
 
@@ -211,14 +217,11 @@ public class Grid {
 		return offset;
 	}
 
-	public Point getNestPos() {
-		return nestPos;
+	public List<Point> getNestPositions() {
+		return nestPositions;
 	}
 
-	public void setNestPos(int x, int y) {
-		nestPos.setLocation(x, y);
-		controller.getView().getSettingsWindow().getNestPositionLabel().setText(String.format("%s / %s", x, y));
-		controller.getPathfinding().findAllNeighbours();
+	public ArrayList<Point> getFoodPositions() {
+		return foodPositions;
 	}
-
 }

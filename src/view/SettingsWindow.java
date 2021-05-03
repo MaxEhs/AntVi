@@ -19,7 +19,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import controller.Controller;
-import grid.FoodSource;
 import grid.GridNode;
 
 /**
@@ -34,8 +33,6 @@ public class SettingsWindow {
 	private Controller controller;
 
 	private JFrame frame;
-	private JLabel howTo;
-	private JLabel nestPositionLabel;
 	private JLabel foodGatheredLabel;
 	private JLabel modelTicksLabel;
 	private JPanel mainPanel;
@@ -48,11 +45,6 @@ public class SettingsWindow {
 	private JSlider maximumPheromoneSlider;
 	private JSpinner antCountInput;
 	private JButton playPauseButton;
-	private JButton resetButton;
-	private JButton clearGridButton;
-	private JButton displayShortestPathButton;
-	private JButton hideShortestPathButton;
-
 	private String title;
 	private int width;
 	private int height;
@@ -85,10 +77,10 @@ public class SettingsWindow {
 		frame.add(mainPanel);
 
 		// How-to Label
-		howTo = new JLabel("<html><body>Welcome to AntVi!<br>You can interact with the Grid as follows:<br>"
-				+ "Highlight the Grid window and<br>> press N to move the Nest<br>"
-				+ "> press F to place or remove a FoodSource<br>"
-				+ "> left or right click to place or remove a wall</html></body>", SwingConstants.CENTER);
+		JLabel howTo = new JLabel("<html><body>Welcome to AntVi!<br>You can interact with the Grid as follows:<br>"
+				+ "Highlight the Grid window and<br>> press N to place or remove a Nest<br>"
+				+ "> press F to place or remove a FoodSource<br>> click to place or remove a wall</html></body>",
+				SwingConstants.CENTER);
 		howTo.setBorder(BorderFactory.createTitledBorder("How To:"));
 		howTo.setPreferredSize(new Dimension(width - 20, 170));
 		mainPanel.add(howTo);
@@ -154,8 +146,12 @@ public class SettingsWindow {
 			public void stateChanged(ChangeEvent event) {
 
 				double value = (double) pheromoneFallOffSlider.getValue();
-				pheromoneFallOffSlider.setBorder(
-						BorderFactory.createTitledBorder(String.format("Pheromone Falloff Ratio: %.0f %%", value)));
+				if (value <= 0) {
+					pheromoneFallOffSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Falloff Ratio: OFF"));
+				} else {
+					pheromoneFallOffSlider.setBorder(
+							BorderFactory.createTitledBorder(String.format("Pheromone Falloff Ratio: %.0f %%", value)));
+				}
 
 				if (!pheromoneFallOffSlider.getValueIsAdjusting()) {
 					controller.getModel().setPheromoneFallOff(value);
@@ -183,8 +179,8 @@ public class SettingsWindow {
 		mainPanel.add(moveRandomizationSlider);
 
 		// Maximum pheromone saturation slider
-		maximumPheromoneSlider = new JSlider(1, 1000, 50);
-		maximumPheromoneSlider.setBorder(BorderFactory.createTitledBorder("Maximum Pheromone per Cell: 50"));
+		maximumPheromoneSlider = new JSlider(1, 1000, 250);
+		maximumPheromoneSlider.setBorder(BorderFactory.createTitledBorder("Maximum Pheromone per Cell: 250"));
 		maximumPheromoneSlider.setPreferredSize(new Dimension(width - 30, 50));
 		maximumPheromoneSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent event) {
@@ -194,7 +190,7 @@ public class SettingsWindow {
 						BorderFactory.createTitledBorder(String.format("Maximum Pheromone per Cell: %d", value)));
 
 				if (!maximumPheromoneSlider.getValueIsAdjusting()) {
-					GridNode.MAX_PHEROMONE = value;
+					GridNode.setMaxPheromone(value);
 				}
 			}
 		});
@@ -210,12 +206,6 @@ public class SettingsWindow {
 			}
 		});
 		mainPanel.add(antCountInput);
-
-		// Nest position label
-		nestPositionLabel = new JLabel("0 / 0", SwingConstants.CENTER);
-		nestPositionLabel.setBorder(BorderFactory.createTitledBorder("Nest Position:"));
-		nestPositionLabel.setPreferredSize(new Dimension(width / 2 - 20, 50));
-		mainPanel.add(nestPositionLabel);
 
 		// Food gathered label
 		foodGatheredLabel = new JLabel("0", SwingConstants.CENTER);
@@ -248,7 +238,7 @@ public class SettingsWindow {
 		mainPanel.add(playPauseButton);
 
 		// Reset Button
-		resetButton = new JButton("Reset");
+		JButton resetButton = new JButton("Reset");
 		resetButton.setPreferredSize(new Dimension(width / 3 - 10, 60));
 		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -282,14 +272,13 @@ public class SettingsWindow {
 		mainPanel.add(resetButton);
 
 		// Clear Grid Button
-		clearGridButton = new JButton("Clear Grid");
+		JButton clearGridButton = new JButton("Clear Grid");
 		clearGridButton.setPreferredSize(new Dimension(width / 3 - 10, 60));
 		clearGridButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
 				// Re-make Grid of the same size as before
 				controller.getGrid().setCellCount(controller.getGrid().getCellCount());
-				nestPositionLabel.setText("0 / 0");
 			}
 		});
 		mainPanel.add(clearGridButton);
@@ -312,7 +301,7 @@ public class SettingsWindow {
 		mainPanel.add(modelSpeedSlider);
 
 		// Show shortest path(s) Button
-		displayShortestPathButton = new JButton("Show Shortest Path(s)");
+		JButton displayShortestPathButton = new JButton("Show Shortest Path(s)");
 		displayShortestPathButton.setPreferredSize(new Dimension(width / 2 - 20, 60));
 		displayShortestPathButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -320,20 +309,16 @@ public class SettingsWindow {
 				// Reset previous paths
 				controller.getPathfinding().findAllNeighbours();
 
-				int startX = controller.getGrid().getNestPos().x;
-				int startY = controller.getGrid().getNestPos().y;
-				int cellCount = controller.getGrid().getCellCount();
-				GridNode[][] nodes = controller.getGrid().getNodes();
+				// For each Nest find the shortest path(s) to all FoodSources
+				for (Point nestPos : controller.getGrid().getNestPositions()) {
+					for (Point foodPos : controller.getGrid().getFoodPositions()) {
 
-				for (int x = 0; x < cellCount; x++) {
-					for (int y = 0; y < cellCount; y++) {
+						int startX = foodPos.x;
+						int startY = foodPos.y;
 
-						if (nodes[x][y] instanceof FoodSource) {
-
-							int targetX = x;
-							int targetY = y;
-							controller.getPathfinding().findPath(startX, startY, targetX, targetY);
-						}
+						int targetX = nestPos.x;
+						int targetY = nestPos.y;
+						controller.getPathfinding().findPath(startX, startY, targetX, targetY);
 					}
 				}
 			}
@@ -341,7 +326,7 @@ public class SettingsWindow {
 		mainPanel.add(displayShortestPathButton);
 
 		// Hide shortest path(s) Button
-		hideShortestPathButton = new JButton("Hide Shortest Path(s)");
+		JButton hideShortestPathButton = new JButton("Hide Shortest Path(s)");
 		hideShortestPathButton.setPreferredSize(new Dimension(width / 2 - 20, 60));
 		hideShortestPathButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -357,10 +342,6 @@ public class SettingsWindow {
 
 	public JFrame getFrame() {
 		return frame;
-	}
-
-	public JLabel getNestPositionLabel() {
-		return nestPositionLabel;
 	}
 
 	public JSpinner getAntCountInput() {

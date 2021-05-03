@@ -34,7 +34,7 @@ public class Controller implements Runnable {
 	private boolean running;
 	private boolean modelRunning;
 	private int modelSpeed = 30;
-	private int modelTicks = 0;
+	private int modelTicks;
 	private Thread thread;
 	private Graphics2D g;
 

@@ -1,6 +1,6 @@
 package model;
 
-import java.awt.Graphics2D;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,14 +30,14 @@ import utils.GridNodeWithPercentage;
  */
 public class Ant {
 
-	Model model;
-	BufferedImage icon;
+	private static final Random rand = new Random();
+	private Model model;
+	private BufferedImage icon;
 	private Point position;
 	private boolean carryingFood;
 	private int stepsWalked;
 	private Queue<GridNode> lastWalked = new LinkedList<>();
 	private Facing facing;
-	private static final Random rand = new Random();
 
 	public enum Facing {
 		UP, DOWN, LEFT, RIGHT, UPLEFT, UPRIGHT, DOWNLEFT, DOWNRIGHT
@@ -58,7 +57,7 @@ public class Ant {
 		this.facing = directions.get(rand.nextInt(directions.size()));
 	}
 
-	public void render(Graphics2D g) {
+	public void render(Graphics g) {
 
 		int gridCellSize = model.getGrid().getCellSize();
 		int initialGridCellSize = model.getGrid().getInitialCellSize();
@@ -456,7 +455,7 @@ public class Ant {
 	 *                          preferred
 	 * @return the node that was picked.
 	 */
-	public GridNode getNodeByProbablility(int pheromone, Collection<GridNode> nodes, Random random,
+	public GridNode getNodeByProbablility(int pheromone, Iterable<GridNode> nodes, Random random,
 			boolean preferNestAndFood) {
 
 		ArrayList<GridNodeWithPercentage> chanceList = new ArrayList<>();
@@ -469,7 +468,7 @@ public class Ant {
 				return gn;
 			}
 
-			double pheromoneSaturation = gn.getPheromoneAmount(pheromone) / GridNode.MAX_PHEROMONE;
+			double pheromoneSaturation = gn.getPheromoneAmount(pheromone) / GridNode.getMaxPheromone();
 			chanceList.add(new GridNodeWithPercentage(gn, pheromoneSaturation));
 			totalPercentages += pheromoneSaturation;
 
