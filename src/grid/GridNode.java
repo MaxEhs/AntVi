@@ -21,7 +21,7 @@ public abstract class GridNode {
 	 * This array is initialized with a size of 8, meaning there can be 8 different
 	 * "kinds" of pheromones based on the index.
 	 */
-	private static double maxPheromone = 100.0D;
+	private static double maxPheromone = 250.0D;
 	private double[] pheromoneAmount;
 
 	// Used for A* path finding

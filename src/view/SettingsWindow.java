@@ -33,7 +33,6 @@ public class SettingsWindow {
 	private Controller controller;
 
 	private JFrame frame;
-	private JLabel nestPositionLabel;
 	private JLabel foodGatheredLabel;
 	private JLabel modelTicksLabel;
 	private JPanel mainPanel;
@@ -180,8 +179,8 @@ public class SettingsWindow {
 		mainPanel.add(moveRandomizationSlider);
 
 		// Maximum pheromone saturation slider
-		maximumPheromoneSlider = new JSlider(1, 1000, 100);
-		maximumPheromoneSlider.setBorder(BorderFactory.createTitledBorder("Maximum Pheromone per Cell: 100"));
+		maximumPheromoneSlider = new JSlider(1, 1000, 250);
+		maximumPheromoneSlider.setBorder(BorderFactory.createTitledBorder("Maximum Pheromone per Cell: 250"));
 		maximumPheromoneSlider.setPreferredSize(new Dimension(width - 30, 50));
 		maximumPheromoneSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent event) {
@@ -207,12 +206,6 @@ public class SettingsWindow {
 			}
 		});
 		mainPanel.add(antCountInput);
-
-		// Nest position label
-		nestPositionLabel = new JLabel("0 / 0", SwingConstants.CENTER);
-		nestPositionLabel.setBorder(BorderFactory.createTitledBorder("Nest Position:"));
-		nestPositionLabel.setPreferredSize(new Dimension(width / 2 - 20, 50));
-		mainPanel.add(nestPositionLabel);
 
 		// Food gathered label
 		foodGatheredLabel = new JLabel("0", SwingConstants.CENTER);
@@ -286,7 +279,6 @@ public class SettingsWindow {
 
 				// Re-make Grid of the same size as before
 				controller.getGrid().setCellCount(controller.getGrid().getCellCount());
-				nestPositionLabel.setText("0 / 0");
 			}
 		});
 		mainPanel.add(clearGridButton);
@@ -350,10 +342,6 @@ public class SettingsWindow {
 
 	public JFrame getFrame() {
 		return frame;
-	}
-
-	public JLabel getNestPositionLabel() {
-		return nestPositionLabel;
 	}
 
 	public JSpinner getAntCountInput() {
