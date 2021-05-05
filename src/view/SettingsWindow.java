@@ -48,6 +48,7 @@ public class SettingsWindow {
 	private String title;
 	private int width;
 	private int height;
+	private boolean displayingPaths;
 
 	public SettingsWindow(Controller controller, String title, int width, int height) {
 
@@ -121,8 +122,8 @@ public class SettingsWindow {
 		mainPanel.add(pheromoneStrengthSlider);
 
 		// Pheromone evaporation speed slider
-		pheromoneEvaporationSlider = new JSlider(0, 200, 50);
-		pheromoneEvaporationSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Evaporation Speed: 0,50"));
+		pheromoneEvaporationSlider = new JSlider(0, 400, 95);
+		pheromoneEvaporationSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Evaporation Speed: 0,95"));
 		pheromoneEvaporationSlider.setPreferredSize(new Dimension(width - 30, 50));
 		pheromoneEvaporationSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent event) {
@@ -139,8 +140,8 @@ public class SettingsWindow {
 		mainPanel.add(pheromoneEvaporationSlider);
 
 		// Pheromone falloff slider
-		pheromoneFallOffSlider = new JSlider(0, 100, 75);
-		pheromoneFallOffSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Falloff Ratio: 75 %"));
+		pheromoneFallOffSlider = new JSlider(0, 100, 65);
+		pheromoneFallOffSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Falloff Ratio: 65 %"));
 		pheromoneFallOffSlider.setPreferredSize(new Dimension(width - 30, 50));
 		pheromoneFallOffSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent event) {
@@ -161,8 +162,8 @@ public class SettingsWindow {
 		mainPanel.add(pheromoneFallOffSlider);
 
 		// Movement randomization slider
-		moveRandomizationSlider = new JSlider(0, 100, 15);
-		moveRandomizationSlider.setBorder(BorderFactory.createTitledBorder("Random Movement Chance: 15 %"));
+		moveRandomizationSlider = new JSlider(0, 100, 1);
+		moveRandomizationSlider.setBorder(BorderFactory.createTitledBorder("Random Movement Chance: 1 %"));
 		moveRandomizationSlider.setPreferredSize(new Dimension(width - 30, 50));
 		moveRandomizationSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent event) {
@@ -300,43 +301,66 @@ public class SettingsWindow {
 		});
 		mainPanel.add(modelSpeedSlider);
 
-		// Show shortest path(s) Button
+		// Show/Hide shortest path(s) Button
 		JButton displayShortestPathButton = new JButton("Show Shortest Path(s)");
 		displayShortestPathButton.setPreferredSize(new Dimension(width / 2 - 20, 60));
 		displayShortestPathButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				// Reset previous paths
-				controller.getPathfinding().findAllNeighbours();
+				if (!displayingPaths) {
 
-				// For each Nest find the shortest path(s) to all FoodSources
-				for (Point nestPos : controller.getGrid().getNestPositions()) {
-					for (Point foodPos : controller.getGrid().getFoodPositions()) {
+					// Reset previous paths
+					controller.getPathfinding().findAllNeighbours();
 
-						int startX = foodPos.x;
-						int startY = foodPos.y;
+					// For each Nest find the shortest path(s) to all FoodSources
+					for (Point nestPos : controller.getGrid().getNestPositions()) {
+						for (Point foodPos : controller.getGrid().getFoodPositions()) {
 
-						int targetX = nestPos.x;
-						int targetY = nestPos.y;
-						controller.getPathfinding().findPath(startX, startY, targetX, targetY);
+							int startX = foodPos.x;
+							int startY = foodPos.y;
+
+							int targetX = nestPos.x;
+							int targetY = nestPos.y;
+							controller.getPathfinding().findPath(startX, startY, targetX, targetY);
+						}
 					}
+
+					displayShortestPathButton.setText("Hide Shortest Path(s)");
+					displayingPaths = true;
+
+				} else {
+
+					// Reset paths
+					controller.getPathfinding().findAllNeighbours();
+
+					displayShortestPathButton.setText("Show Shortest Path(s)");
+					displayingPaths = false;
 				}
 			}
 		});
 		mainPanel.add(displayShortestPathButton);
 
-		// Hide shortest path(s) Button
-		JButton hideShortestPathButton = new JButton("Hide Shortest Path(s)");
-		hideShortestPathButton.setPreferredSize(new Dimension(width / 2 - 20, 60));
-		hideShortestPathButton.addActionListener(new ActionListener() {
+		// Toggle pheromone dissipation Button
+		JButton toggleDissipationButton = new JButton("Enable Dissipation");
+		toggleDissipationButton.setPreferredSize(new Dimension(width / 2 - 20, 60));
+		toggleDissipationButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				// Reset paths
-				controller.getPathfinding().findAllNeighbours();
+				if (!controller.getModel().isUsingDissipation()) {
 
+					// Enable dissipation
+					controller.getModel().setUsingDissipation(true);
+					toggleDissipationButton.setText("Disable Dissipation");
+
+				} else {
+
+					// Disable dissipation
+					controller.getModel().setUsingDissipation(false);
+					toggleDissipationButton.setText("Enable Dissipation");
+				}
 			}
 		});
-		mainPanel.add(hideShortestPathButton);
+		mainPanel.add(toggleDissipationButton);
 
 	}
 

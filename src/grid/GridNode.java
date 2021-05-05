@@ -255,4 +255,14 @@ public abstract class GridNode {
 		}
 	}
 
+	public void setPheromoneAmount(int index, double amount) {
+		pheromoneAmount[index] = amount;
+
+		if (pheromoneAmount[index] < 0) {
+			pheromoneAmount[index] = 0;
+		}
+		if (pheromoneAmount[index] > getMaxPheromone()) {
+			pheromoneAmount[index] = getMaxPheromone();
+		}
+	}
 }

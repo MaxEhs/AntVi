@@ -28,6 +28,7 @@ public abstract class Model {
 	private double pheromoneFallOff;
 	private double randomTurnChance;
 	private boolean usingFallOff;
+	private boolean usingDissipation;
 	private int foodGathered;
 
 	protected Model(Controller controller, Grid grid) {
@@ -37,9 +38,9 @@ public abstract class Model {
 		// DEFAULT VALUES
 		antCount = 0;
 		pheromoneStrength = 8.0;
-		evaporationSpeed = 0.50;
-		randomTurnChance = 0.15;
-		setPheromoneFallOff(75.0);
+		evaporationSpeed = 0.95;
+		randomTurnChance = 0.01;
+		setPheromoneFallOff(65.0);
 	}
 
 	public synchronized void tick() {
@@ -119,11 +120,19 @@ public abstract class Model {
 		return usingFallOff;
 	}
 
+	public boolean isUsingDissipation() {
+		return usingDissipation;
+	}
+
+	public void setUsingDissipation(boolean usingDissipation) {
+		this.usingDissipation = usingDissipation;
+	}
+
 	public List<Ant> getAnts() {
 		return new ArrayList<>(ants);
 	}
 
-	public int getAntCount() {
+	public synchronized int getAntCount() {
 		return antCount;
 	}
 

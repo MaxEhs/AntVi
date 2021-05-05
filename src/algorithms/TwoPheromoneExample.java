@@ -34,8 +34,12 @@ public class TwoPheromoneExample extends Model {
 		for (Ant ant : getAnts()) {
 
 			List<GridNode> lookingAt;
-			if (isUsingFallOff() && ant.getStepsWalked() == 1) {
-				lookingAt = ant.getFiveInFront();
+
+			// If a Nest or FoodSource has just been visited, look around
+			if (ant.getStepsWalked() == 1) {
+				lookingAt = ant.getSurroundingNodes();
+
+				// Otherwise just look ahead
 			} else {
 				lookingAt = ant.getThreeInFront();
 			}
@@ -59,18 +63,14 @@ public class TwoPheromoneExample extends Model {
 			if (ant.isCarryingFood()) {
 
 				// Probably move to node with highest pheromone one
-				// bestChoice = ant.getNodeByProbablility(PHEROMONE_ONE, lookingAt, random,
-				// true);
-				bestChoice = ant.getNodeWithHighestConcentration(PHEROMONE_ONE, lookingAt, true);
+				bestChoice = ant.getNodeByProbablility(PHEROMONE_ONE, lookingAt, random, true, true);
 
 			} else {
 
 				// Probably move to node with highest pheromone two
-				// bestChoice = ant.getNodeByProbablility(PHEROMONE_TWO, lookingAt, random,
-				// true);
-				bestChoice = ant.getNodeWithHighestConcentration(PHEROMONE_TWO, lookingAt, true);
-
+				bestChoice = ant.getNodeByProbablility(PHEROMONE_TWO, lookingAt, random, true, true);
 			}
+
 			ant.moveTo(bestChoice);
 			ant.increaseStepsWalked();
 		}
@@ -126,14 +126,20 @@ public class TwoPheromoneExample extends Model {
 				// Iterating through all GridNodes and decreasing all pheromones
 				GridNode tempNode = getGrid().getNode(x, y);
 				for (int i = 0; i < tempNode.getPheromones().length; i++) {
-					tempNode.decreasePheromoneBy(i, getEvaporationSpeed());
 
-					// Attempt at dissipation
-					for (GridNode gn : tempNode.getNearbyNodes()) {
-						double temp = (tempNode.getPheromoneAmount(i) / GridNode.getMaxPheromone());
-						gn.increasePheromoneBy(i, temp);
-						tempNode.decreasePheromoneBy(i, temp);
+					// Dissipate pheromone to surrounding GridNodes
+					if (isUsingDissipation()) {
+						for (GridNode gn : tempNode.getNearbyNodes()) {
+
+							double temp = (tempNode.getPheromoneAmount(i) / GridNode.getMaxPheromone());
+							gn.increasePheromoneBy(i, temp);
+							tempNode.decreasePheromoneBy(i,
+									temp + (getEvaporationSpeed() / tempNode.getNearbyNodes().size()));
+						}
 					}
+
+					// Globally decreasing all pheromones
+					tempNode.decreasePheromoneBy(i, getEvaporationSpeed());
 				}
 			}
 		}

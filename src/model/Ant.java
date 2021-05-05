@@ -454,13 +454,25 @@ public class Ant {
 	 * @param random            a Random object to generate some random numbers
 	 * @param preferNestAndFood whether a Nest or FoodSource node should always be
 	 *                          preferred
+	 * @param useAggressiveBias will make it more likely that the GridNode with the
+	 *                          highest pheromone concentration is chosen
 	 * @return the node that was picked.
 	 */
-	public GridNode getNodeByProbablility(int pheromone, Iterable<GridNode> nodes, Random random,
-			boolean preferNestAndFood) {
+	public GridNode getNodeByProbablility(int pheromone, List<GridNode> nodes, Random random, boolean preferNestAndFood,
+			boolean useAggressiveBias) {
 
 		ArrayList<GridNodeWithPercentage> chanceList = new ArrayList<>();
 		double totalPercentages = 0;
+		GridNode highest = nodes.get(0);
+
+		if (useAggressiveBias) {
+			// Find node with highest pheromone
+			for (GridNode gn : nodes) {
+				if (highest.getPheromoneAmount(pheromone) < gn.getPheromoneAmount(pheromone)) {
+					highest = gn;
+				}
+			}
+		}
 
 		// Add all given nodes to the chanceList and add up their probabilities
 		for (GridNode gn : nodes) {
@@ -469,10 +481,19 @@ public class Ant {
 				return gn;
 			}
 
-			double pheromoneSaturation = gn.getPheromoneAmount(pheromone) / GridNode.getMaxPheromone();
-			chanceList.add(new GridNodeWithPercentage(gn, pheromoneSaturation));
-			totalPercentages += pheromoneSaturation;
+			if (useAggressiveBias && gn == highest) {
 
+				// Make the node with highest concentration twice as likely to be chosen
+				double pheromoneSaturation = (gn.getPheromoneAmount(pheromone) / GridNode.getMaxPheromone()) * 1.25;
+				chanceList.add(new GridNodeWithPercentage(gn, pheromoneSaturation));
+				totalPercentages += pheromoneSaturation;
+
+			} else {
+
+				double pheromoneSaturation = gn.getPheromoneAmount(pheromone) / GridNode.getMaxPheromone();
+				chanceList.add(new GridNodeWithPercentage(gn, pheromoneSaturation));
+				totalPercentages += pheromoneSaturation;
+			}
 		}
 
 		Collections.shuffle(chanceList);

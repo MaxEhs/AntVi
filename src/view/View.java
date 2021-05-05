@@ -17,7 +17,7 @@ public class View {
 
 	public View(Controller controller, int width, int height) {
 		// Creating the windows
-		settingsWindow = new SettingsWindow(controller, "AntVi - Parameters", 400, 850);
+		settingsWindow = new SettingsWindow(controller, "AntVi - Parameters", 400, 805);
 		displayWindow = new DisplayWindow("AntVi - Simulation", width, height);
 
 		// Setting the window's positions
