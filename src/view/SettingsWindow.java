@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -212,12 +214,28 @@ public class SettingsWindow {
 		modelTicksLabel = new JLabel("0", SwingConstants.CENTER);
 		modelTicksLabel.setBorder(BorderFactory.createTitledBorder("Model Ticks:"));
 		modelTicksLabel.setPreferredSize(new Dimension(width / 3 - 10, 50));
+		controller.getModel().addChangeListener(new PropertyChangeListener() {
+
+			public void propertyChange(PropertyChangeEvent evt) {
+				if ("modelTicks".equals(evt.getPropertyName())) {
+					modelTicksLabel.setText(String.format("%s", evt.getNewValue()));
+				}
+			}
+		});
 		mainPanel.add(modelTicksLabel);
 
 		// Food gathered label
 		foodGatheredLabel = new JLabel("0", SwingConstants.CENTER);
 		foodGatheredLabel.setBorder(BorderFactory.createTitledBorder("Food Gathered:"));
 		foodGatheredLabel.setPreferredSize(new Dimension(width / 3 - 10, 50));
+		controller.getModel().addChangeListener(new PropertyChangeListener() {
+
+			public void propertyChange(PropertyChangeEvent evt) {
+				if ("foodGathered".equals(evt.getPropertyName())) {
+					foodGatheredLabel.setText(String.format("%s", evt.getNewValue()));
+				}
+			}
+		});
 		mainPanel.add(foodGatheredLabel);
 
 		// Play/Pause Button
@@ -239,7 +257,7 @@ public class SettingsWindow {
 		mainPanel.add(playPauseButton);
 
 		// Reset Button
-		JButton resetButton = new JButton("Reset");
+		JButton resetButton = new JButton("Reset Model");
 		resetButton.setPreferredSize(new Dimension(width / 3 - 10, 60));
 		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -251,8 +269,7 @@ public class SettingsWindow {
 				controller.setModelRunning(false);
 				playPauseButton.setText("Play Simulation");
 				controller.getModel().setFoodGathered(0);
-				controller.setModelTicks(0);
-				modelTicksLabel.setText("0");
+				controller.getModel().setModelTicks(0);
 
 				// Reset Ants
 				controller.getModel().setAntCount(0);
@@ -295,7 +312,7 @@ public class SettingsWindow {
 						.createTitledBorder(String.format("Simulation Ticks/s: %s", modelSpeedSlider.getValue())));
 
 				if (!modelSpeedSlider.getValueIsAdjusting()) {
-					controller.setModelSpeed(modelSpeedSlider.getValue());
+					controller.getModel().setModelSpeed(modelSpeedSlider.getValue());
 				}
 			}
 		});

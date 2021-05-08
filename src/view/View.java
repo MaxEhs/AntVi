@@ -20,7 +20,7 @@ public class View {
 		settingsWindow = new SettingsWindow(controller, "AntVi - Parameters", 400, 805);
 		displayWindow = new DisplayWindow("AntVi - Simulation", width, height);
 
-		// Setting the window's positions
+		// Setting the window positions
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		displayWindow.getFrame().setLocation(d.width / 2 - displayWindow.getFrame().getSize().width / 2,
 				d.height / 2 - displayWindow.getFrame().getSize().height / 2);

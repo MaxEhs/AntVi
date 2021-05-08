@@ -12,15 +12,14 @@ import java.awt.event.KeyListener;
  */
 public class KeyManager implements KeyListener {
 
-	// Largest KeyEvent index (VK_P) + 1
-	private static final int KEYS_SIZE = 81;
+	// Smallest possible index needed (KeyEvent.VK_N) + 1
+	private static final int KEYS_SIZE = 79;
 
 	private boolean[] keys;
 	private boolean[] justPressed;
 	private boolean[] cantPress;
 	private boolean foodKey;
 	private boolean nestKey;
-	private boolean pathKey;
 
 	public KeyManager() {
 		keys = new boolean[KEYS_SIZE];
@@ -48,7 +47,6 @@ public class KeyManager implements KeyListener {
 
 		foodKey = keys[KeyEvent.VK_F];
 		nestKey = keys[KeyEvent.VK_N];
-		pathKey = keys[KeyEvent.VK_P];
 	}
 
 	// Key just pressed
@@ -78,7 +76,7 @@ public class KeyManager implements KeyListener {
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		// Overridden but currently unused.
+		// Currently unused
 
 	}
 
@@ -88,9 +86,5 @@ public class KeyManager implements KeyListener {
 
 	public boolean isNestKey() {
 		return nestKey;
-	}
-
-	public boolean isPathKey() {
-		return pathKey;
 	}
 }

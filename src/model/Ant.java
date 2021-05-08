@@ -47,6 +47,7 @@ public class Ant {
 	public Ant(Model model, Point position) {
 		this.model = model;
 		this.position = position;
+		lastWalked.add(model.getGrid().getNode(position));
 		try {
 			icon = ImageIO.read(new File("src/ant.png"));
 		} catch (IOException e) {
@@ -461,6 +462,10 @@ public class Ant {
 	public GridNode getNodeByProbablility(int pheromone, List<GridNode> nodes, Random random, boolean preferNestAndFood,
 			boolean useAggressiveBias) {
 
+		if (nodes.isEmpty()) {
+			return null;
+		}
+
 		ArrayList<GridNodeWithPercentage> chanceList = new ArrayList<>();
 		double totalPercentages = 0;
 		GridNode highest = nodes.get(0);
@@ -519,20 +524,30 @@ public class Ant {
 	 * @return a List of up to eight walkable GridNodes adjacent to the Ant.
 	 */
 	public List<GridNode> getSurroundingNodes() {
-		ArrayList<GridNode> list = new ArrayList<>();
+		List<GridNode> list = new ArrayList<>();
 
 		for (GridNode gn : model.getGrid().getNode(position).getNearbyNodes()) {
 			if (!gn.isBlocking()) {
 				list.add(gn);
 			}
 		}
-
 		list.removeAll(lastWalked);
+
 		if (!list.isEmpty()) {
 			return list;
 		} else {
+			// List was empty, maybe short-term memory is blocking all ways
+			// Clear the short-term memory and try again
 			lastWalked.clear();
-			return getSurroundingNodes();
+
+			for (GridNode gn : model.getGrid().getNode(position).getNearbyNodes()) {
+				if (!gn.isBlocking()) {
+					list.add(gn);
+				}
+			}
+			list.removeAll(lastWalked);
+
+			return list;
 		}
 	}
 

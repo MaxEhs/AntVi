@@ -54,8 +54,10 @@ public class TwoPheromoneExample extends Model {
 
 			// Randomly move based on a percent chance
 			if (random.nextDouble() < getRandomMoveChance()) {
-				ant.moveTo(lookingAt.get(random.nextInt(lookingAt.size())));
-				ant.increaseStepsWalked();
+				if (!lookingAt.isEmpty()) {
+					ant.moveTo(lookingAt.get(random.nextInt(lookingAt.size())));
+					ant.increaseStepsWalked();
+				}
 				continue;
 			}
 
@@ -71,8 +73,10 @@ public class TwoPheromoneExample extends Model {
 				bestChoice = ant.getNodeByProbablility(PHEROMONE_TWO, lookingAt, random, true, true);
 			}
 
-			ant.moveTo(bestChoice);
-			ant.increaseStepsWalked();
+			if (bestChoice != null) {
+				ant.moveTo(bestChoice);
+				ant.increaseStepsWalked();
+			}
 		}
 
 	}

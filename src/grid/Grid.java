@@ -86,7 +86,7 @@ public class Grid {
 	/**
 	 * Iterates through all GridNodes and renders them.
 	 * 
-	 * @param g the AWT Graphics object to be used for rendering
+	 * @param g the AWT Graphics2D object to be used for rendering
 	 */
 	public synchronized void render(Graphics2D g) {
 		synchronized (nodes) {

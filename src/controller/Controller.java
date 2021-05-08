@@ -32,17 +32,16 @@ public class Controller implements Runnable {
 
 	private boolean running;
 	private boolean modelRunning;
-	private int modelSpeed = 30;
-	private int modelTicks;
 	private Thread thread;
 
 	private KeyManager keyManager;
 	private MouseManager mouseManager;
 
 	public Controller(int width, int height) {
-		view = new View(this, width, height);
 		grid = new Grid(this, DEFAULT_GRID_CELL_COUNT, height);
 		model = new TwoPheromoneExample(this, grid);
+		// Initiate Grid and Model before the View, or the event system breaks
+		view = new View(this, width, height);
 		keyManager = new KeyManager();
 		pathfinding = new AStarPathfinding(grid);
 		mouseManager = new MouseManager(grid);
@@ -90,11 +89,9 @@ public class Controller implements Runnable {
 			}
 
 			// Update the model <modelSpeed> ticks per second
-			if (modelRunning && (modelTimer >= 1_000_000_000 / modelSpeed)) {
+			if (modelRunning && (modelTimer >= 1_000_000_000 / model.getModelSpeed())) {
 				// Update the model
 				model.tick();
-				modelTicks++;
-				view.getSettingsWindow().getModelTicksLabel().setText(String.format("%s", modelTicks));
 				modelTimer = 0;
 			}
 
@@ -141,7 +138,7 @@ public class Controller implements Runnable {
 	}
 
 	/**
-	 * Thread-safe way of starting the program
+	 * Used for starting the application
 	 */
 	public synchronized void start() {
 		if (running) {
@@ -153,7 +150,7 @@ public class Controller implements Runnable {
 	}
 
 	/**
-	 * Thread-safe way of stopping the program
+	 * Used for stopping the application
 	 */
 	public synchronized void stop() {
 		if (!running) {
@@ -169,14 +166,6 @@ public class Controller implements Runnable {
 
 	public synchronized void setModelRunning(boolean running) {
 		modelRunning = running;
-	}
-
-	public int getModelTicks() {
-		return modelTicks;
-	}
-
-	public void setModelTicks(int x) {
-		modelTicks = x;
 	}
 
 	public Grid getGrid() {
@@ -201,10 +190,6 @@ public class Controller implements Runnable {
 
 	public Model getModel() {
 		return model;
-	}
-
-	public void setModelSpeed(int modelSpeed) {
-		this.modelSpeed = modelSpeed;
 	}
 
 }

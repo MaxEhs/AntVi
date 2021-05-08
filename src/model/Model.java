@@ -2,6 +2,8 @@ package model;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +22,9 @@ import grid.Grid;
 public abstract class Model {
 
 	private Controller controller;
+	private int modelSpeed = 30;
+	private int modelTicks;
+	private List<PropertyChangeListener> listeners = new ArrayList<>();
 	private Grid grid;
 	private Queue<Ant> ants = new LinkedList<>();
 	private int antCount;
@@ -46,7 +51,7 @@ public abstract class Model {
 	public synchronized void tick() {
 		synchronized (ants) {
 			synchronized (grid) {
-				// Removing ants that are outside of the Grid
+				// Removing ants that are outside of the Grid (after scaling the Grid)
 				Queue<Ant> tempQueue = new LinkedList<>();
 				while (!ants.isEmpty()) {
 					Ant tempAnt = ants.poll();
@@ -60,9 +65,9 @@ public abstract class Model {
 				generateSolutions();
 				daemonActions();
 				pheromoneUpdate();
+				setModelTicks(modelTicks + 1);
 			}
 		}
-
 	}
 
 	public synchronized void render(Graphics2D g) {
@@ -78,6 +83,34 @@ public abstract class Model {
 	public abstract void daemonActions();
 
 	public abstract void pheromoneUpdate();
+
+	public int getModelSpeed() {
+		return modelSpeed;
+	}
+
+	public void setModelSpeed(int modelSpeed) {
+		this.modelSpeed = modelSpeed;
+	}
+
+	public int getModelTicks() {
+		return modelTicks;
+	}
+
+	public void setModelTicks(int modelTicks) {
+
+		notifyListeners(this, "modelTicks", this.modelTicks, modelTicks);
+		this.modelTicks = modelTicks;
+	}
+
+	private void notifyListeners(Object object, String property, int oldValue, int newValue) {
+		for (PropertyChangeListener pcl : listeners) {
+			pcl.propertyChange(new PropertyChangeEvent(this, property, oldValue, newValue));
+		}
+	}
+
+	public void addChangeListener(PropertyChangeListener listener) {
+		listeners.add(listener);
+	}
 
 	public double getPheromoneStrength() {
 		return pheromoneStrength;
@@ -173,12 +206,12 @@ public abstract class Model {
 	}
 
 	public void increaseFoodGathered() {
+		notifyListeners(this, "foodGathered", foodGathered, foodGathered + 1);
 		foodGathered++;
-		controller.getView().getSettingsWindow().getFoodGatheredLabel().setText(String.format("%s", foodGathered));
 	}
 
 	public void setFoodGathered(int value) {
+		notifyListeners(this, "foodGathered", foodGathered, value);
 		foodGathered = value;
-		controller.getView().getSettingsWindow().getFoodGatheredLabel().setText(String.format("%s", foodGathered));
 	}
 }
