@@ -1,11 +1,12 @@
 package view;
 
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -21,7 +22,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import controller.Controller;
-import grid.GridNode;
 
 /**
  * The AntVi SettingsWindow class. This class belongs to the GUI and contains
@@ -33,6 +33,7 @@ import grid.GridNode;
 public class SettingsWindow {
 
 	private Controller controller;
+	private List<PropertyChangeListener> listeners = new ArrayList<>();
 
 	private JFrame frame;
 	private JLabel foodGatheredLabel;
@@ -50,7 +51,6 @@ public class SettingsWindow {
 	private String title;
 	private int width;
 	private int height;
-	private boolean displayingPaths;
 
 	public SettingsWindow(Controller controller, String title, int width, int height) {
 
@@ -62,8 +62,21 @@ public class SettingsWindow {
 		createSettingsWindow();
 	}
 
+	/*
+	 * Used for managing PropertyChangeEvents
+	 */
+	private void notifyListeners(Object object, String property, Object oldValue, Object newValue) {
+		for (PropertyChangeListener pcl : listeners) {
+			pcl.propertyChange(new PropertyChangeEvent(this, property, oldValue, newValue));
+		}
+	}
+
+	public void addChangeListener(PropertyChangeListener listener) {
+		listeners.add(listener);
+	}
+
 	/**
-	 * Used for initializing the settings window
+	 * Used for initializing the settings window + event triggers
 	 */
 	private void createSettingsWindow() {
 
@@ -99,7 +112,7 @@ public class SettingsWindow {
 						BorderFactory.createTitledBorder(String.format("Grid Size: %s", cellCountSlider.getValue())));
 
 				if (!cellCountSlider.getValueIsAdjusting()) {
-					controller.getGrid().setCellCount(cellCountSlider.getValue());
+					notifyListeners(this, "CellCountChanged", null, cellCountSlider.getValue());
 				}
 			}
 		});
@@ -117,7 +130,7 @@ public class SettingsWindow {
 						.setBorder(BorderFactory.createTitledBorder(String.format("Pheromone Strength: %.1f", value)));
 
 				if (!pheromoneStrengthSlider.getValueIsAdjusting()) {
-					controller.getModel().setPheromoneStrength(value);
+					notifyListeners(this, "PheromoneStrengthChanged", null, value);
 				}
 			}
 		});
@@ -135,7 +148,7 @@ public class SettingsWindow {
 						BorderFactory.createTitledBorder(String.format("Pheromone Evaporation Speed: %.2f", value)));
 
 				if (!pheromoneEvaporationSlider.getValueIsAdjusting()) {
-					controller.getModel().setEvaporationSpeed(value);
+					notifyListeners(this, "PheromoneEvaporationChanged", null, value);
 				}
 			}
 		});
@@ -157,7 +170,7 @@ public class SettingsWindow {
 				}
 
 				if (!pheromoneFallOffSlider.getValueIsAdjusting()) {
-					controller.getModel().setPheromoneFallOff(value);
+					notifyListeners(this, "PheromoneFallOffChanged", null, value);
 				}
 			}
 		});
@@ -175,7 +188,7 @@ public class SettingsWindow {
 						.createTitledBorder(String.format("Random Movement Chance: %.0f %%", value * 100)));
 
 				if (!moveRandomizationSlider.getValueIsAdjusting()) {
-					controller.getModel().setRandomTurnChance(value);
+					notifyListeners(this, "RandomMoveChanceChanged", null, value);
 				}
 			}
 		});
@@ -193,7 +206,7 @@ public class SettingsWindow {
 						BorderFactory.createTitledBorder(String.format("Maximum Pheromone per Cell: %d", value)));
 
 				if (!maximumPheromoneSlider.getValueIsAdjusting()) {
-					GridNode.setMaxPheromone(value);
+					notifyListeners(this, "MaximumSaturationChanged", null, value);
 				}
 			}
 		});
@@ -204,8 +217,9 @@ public class SettingsWindow {
 		antCountInput.setPreferredSize(new Dimension(width / 3 - 10, 50));
 		antCountInput.setBorder(BorderFactory.createTitledBorder("Ant Count:"));
 		antCountInput.addChangeListener(new ChangeListener() {
+
 			public void stateChanged(ChangeEvent event) {
-				controller.getModel().setAntCount((int) antCountInput.getValue());
+				notifyListeners(this, "AntCountChanged", null, antCountInput.getValue());
 			}
 		});
 		mainPanel.add(antCountInput);
@@ -217,7 +231,7 @@ public class SettingsWindow {
 		controller.getModel().addChangeListener(new PropertyChangeListener() {
 
 			public void propertyChange(PropertyChangeEvent evt) {
-				if ("modelTicks".equals(evt.getPropertyName())) {
+				if ("ModelTicks".equals(evt.getPropertyName())) {
 					modelTicksLabel.setText(String.format("%s", evt.getNewValue()));
 				}
 			}
@@ -231,7 +245,7 @@ public class SettingsWindow {
 		controller.getModel().addChangeListener(new PropertyChangeListener() {
 
 			public void propertyChange(PropertyChangeEvent evt) {
-				if ("foodGathered".equals(evt.getPropertyName())) {
+				if ("FoodGathered".equals(evt.getPropertyName())) {
 					foodGatheredLabel.setText(String.format("%s", evt.getNewValue()));
 				}
 			}
@@ -239,17 +253,17 @@ public class SettingsWindow {
 		mainPanel.add(foodGatheredLabel);
 
 		// Play/Pause Button
-		playPauseButton = new JButton("Play Simulation");
+		playPauseButton = new JButton("Play");
 		playPauseButton.setPreferredSize(new Dimension(width / 3 - 10, 60));
 		playPauseButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				if (controller.isModelRunning()) {
-					controller.setModelRunning(false);
-					playPauseButton.setText("Play");
-				} else {
-					controller.setModelRunning(true);
+				if ("Play".equals(playPauseButton.getText())) {
+					notifyListeners(this, "ModelRunningChanged", null, true);
 					playPauseButton.setText("Pause");
+				} else {
+					notifyListeners(this, "ModelRunningChanged", null, false);
+					playPauseButton.setText("Play");
 				}
 
 			}
@@ -262,29 +276,9 @@ public class SettingsWindow {
 		resetButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				// Reset A* paths
-				controller.getPathfinding().findAllNeighbours();
-
-				// Reset Simulation
-				controller.setModelRunning(false);
+				notifyListeners(this, "ResetModel", null, true);
 				playPauseButton.setText("Play Simulation");
-				controller.getModel().setFoodGathered(0);
-				controller.getModel().setModelTicks(0);
-
-				// Reset Ants
-				controller.getModel().setAntCount(0);
 				antCountInput.setValue(0);
-
-				// Reset pheromones
-				for (int x = 0; x < controller.getGrid().getCellCount(); x++) {
-					for (int y = 0; y < controller.getGrid().getCellCount(); y++) {
-						// Iterating through all GridNodes and decreasing all pheromones to 0
-						GridNode tempNode = controller.getGrid().getNode(x, y);
-						for (int i = 0; i < tempNode.getPheromones().length; i++) {
-							tempNode.decreasePheromoneBy(i, Integer.MAX_VALUE);
-						}
-					}
-				}
 			}
 		});
 		mainPanel.add(resetButton);
@@ -296,7 +290,7 @@ public class SettingsWindow {
 			public void actionPerformed(ActionEvent e) {
 
 				// Re-make Grid of the same size as before
-				controller.getGrid().setCellCount(controller.getGrid().getCellCount());
+				notifyListeners(this, "ClearGrid", null, true);
 			}
 		});
 		mainPanel.add(clearGridButton);
@@ -312,7 +306,7 @@ public class SettingsWindow {
 						.createTitledBorder(String.format("Simulation Ticks/s: %s", modelSpeedSlider.getValue())));
 
 				if (!modelSpeedSlider.getValueIsAdjusting()) {
-					controller.getModel().setModelSpeed(modelSpeedSlider.getValue());
+					notifyListeners(this, "ModelSpeedChanged", null, modelSpeedSlider.getValue());
 				}
 			}
 		});
@@ -324,34 +318,15 @@ public class SettingsWindow {
 		displayShortestPathButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				if (!displayingPaths) {
+				if ("Show Shortest Path(s)".equals(displayShortestPathButton.getText())) {
 
-					// Reset previous paths
-					controller.getPathfinding().findAllNeighbours();
-
-					// For each Nest find the shortest path(s) to all FoodSources
-					for (Point nestPos : controller.getGrid().getNestPositions()) {
-						for (Point foodPos : controller.getGrid().getFoodPositions()) {
-
-							int startX = foodPos.x;
-							int startY = foodPos.y;
-
-							int targetX = nestPos.x;
-							int targetY = nestPos.y;
-							controller.getPathfinding().findPath(startX, startY, targetX, targetY);
-						}
-					}
-
+					notifyListeners(this, "ShowShortestPaths", null, true);
 					displayShortestPathButton.setText("Hide Shortest Path(s)");
-					displayingPaths = true;
 
 				} else {
 
-					// Reset paths
-					controller.getPathfinding().findAllNeighbours();
-
+					notifyListeners(this, "ShowShortestPaths", null, false);
 					displayShortestPathButton.setText("Show Shortest Path(s)");
-					displayingPaths = false;
 				}
 			}
 		});
@@ -363,16 +338,16 @@ public class SettingsWindow {
 		toggleDissipationButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				if (!controller.getModel().isUsingDissipation()) {
+				if ("Enable Dissipation".equals(toggleDissipationButton.getText())) {
 
 					// Enable dissipation
-					controller.getModel().setUsingDissipation(true);
+					notifyListeners(this, "UsingDissipationChanged", null, true);
 					toggleDissipationButton.setText("Disable Dissipation");
 
 				} else {
 
 					// Disable dissipation
-					controller.getModel().setUsingDissipation(false);
+					notifyListeners(this, "UsingDissipationChanged", null, false);
 					toggleDissipationButton.setText("Enable Dissipation");
 				}
 			}
@@ -388,21 +363,4 @@ public class SettingsWindow {
 	public JSpinner getAntCountInput() {
 		return antCountInput;
 	}
-
-	public JLabel getFoodGatheredLabel() {
-		return foodGatheredLabel;
-	}
-
-	public JLabel getModelTicksLabel() {
-		return modelTicksLabel;
-	}
-
-	public JPanel getMainPanel() {
-		return mainPanel;
-	}
-
-	public JSlider getPheromoneStrengthSlider() {
-		return pheromoneStrengthSlider;
-	}
-
 }

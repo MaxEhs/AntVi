@@ -2,10 +2,14 @@ package controller;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.image.BufferStrategy;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import algorithms.TwoPheromoneExample;
 import grid.Grid;
+import grid.GridNode;
 import model.Model;
 import utils.AStarPathfinding;
 import utils.KeyManager;
@@ -54,6 +58,95 @@ public class Controller implements Runnable {
 		view.getDisplayWindow().getCanvas().addMouseListener(mouseManager);
 		view.getDisplayWindow().getFrame().addMouseMotionListener(mouseManager);
 		view.getDisplayWindow().getCanvas().addMouseMotionListener(mouseManager);
+
+		// Listens to Events triggered in the SettingsWindow
+		view.getSettingsWindow().addChangeListener(new PropertyChangeListener() {
+
+			public void propertyChange(PropertyChangeEvent e) {
+				switch (e.getPropertyName()) {
+				case "CellCountChanged":
+					grid.setCellCount((int) e.getNewValue());
+					break;
+				case "PheromoneStrengthChanged":
+					model.setPheromoneStrength((double) e.getNewValue());
+					break;
+				case "PheromoneEvaporationChanged":
+					model.setEvaporationSpeed((double) e.getNewValue());
+					break;
+				case "PheromoneFallOffChanged":
+					model.setPheromoneFallOff((double) e.getNewValue());
+					break;
+				case "RandomMoveChanceChanged":
+					model.setRandomTurnChance((double) e.getNewValue());
+					break;
+				case "MaximumSaturationChanged":
+					GridNode.setMaxPheromone((int) e.getNewValue());
+					break;
+				case "AntCountChanged":
+					model.setAntCount((int) e.getNewValue());
+					break;
+				case "ModelRunningChanged":
+					setModelRunning((boolean) e.getNewValue());
+					break;
+				case "ResetModel":
+					// Reset A* paths
+					pathfinding.findAllNeighbours();
+
+					// Reset Simulation
+					setModelRunning(false);
+					model.setFoodGathered(0);
+					model.setModelTicks(0);
+
+					// Reset Ants
+					model.setAntCount(0);
+
+					// Reset pheromones
+					for (int x = 0; x < grid.getCellCount(); x++) {
+						for (int y = 0; y < grid.getCellCount(); y++) {
+							// Iterating through all GridNodes and decreasing all pheromones to 0
+							GridNode tempNode = grid.getNode(x, y);
+							for (int i = 0; i < tempNode.getPheromones().length; i++) {
+								tempNode.decreasePheromoneBy(i, Integer.MAX_VALUE);
+							}
+						}
+					}
+					break;
+				case "ClearGrid":
+					grid.setCellCount(grid.getCellCount());
+					break;
+				case "ModelSpeedChanged":
+					model.setModelSpeed((int) e.getNewValue());
+					break;
+				case "ShowShortestPaths":
+					if ((boolean) e.getNewValue()) {
+						// Reset previous paths
+						pathfinding.findAllNeighbours();
+
+						// For each Nest find the shortest path(s) to all FoodSources
+						for (Point nestPos : getGrid().getNestPositions()) {
+							for (Point foodPos : getGrid().getFoodPositions()) {
+
+								int startX = foodPos.x;
+								int startY = foodPos.y;
+
+								int targetX = nestPos.x;
+								int targetY = nestPos.y;
+								pathfinding.findPath(startX, startY, targetX, targetY);
+							}
+						}
+					} else {
+						// Reset paths
+						pathfinding.findAllNeighbours();
+					}
+					break;
+				case "UsingDissipationChanged":
+					model.setUsingDissipation((boolean) e.getNewValue());
+					break;
+				default:
+					break;
+				}
+			}
+		});
 	}
 
 	/**

@@ -35,7 +35,7 @@ public class AStarPathfinding {
 	 * @param g the AWT Graphics to draw on
 	 */
 	public void render(Graphics g) {
-		for (List<GridNode> path : paths) {
+		for (List<GridNode> path : paths) { //TODO Make this safe against concurrentModificationExceptions
 			for (GridNode gn : path) {
 				g.setColor(Color.red);
 				g.fillRect((gn.getBounds().x + gn.getBounds().width / 3) + grid.getOffset() / 3,

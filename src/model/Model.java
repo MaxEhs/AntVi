@@ -59,6 +59,8 @@ public abstract class Model {
 						tempQueue.add(tempAnt);
 					}
 				}
+				// TODO build an event-based solution for this (JSpinner doesn't work with
+				// PropertyChangeListeners)
 				controller.getView().getSettingsWindow().getAntCountInput().setValue(tempQueue.size());
 				ants = tempQueue;
 
@@ -98,11 +100,11 @@ public abstract class Model {
 
 	public void setModelTicks(int modelTicks) {
 
-		notifyListeners(this, "modelTicks", this.modelTicks, modelTicks);
+		notifyListeners(this, "ModelTicks", this.modelTicks, modelTicks);
 		this.modelTicks = modelTicks;
 	}
 
-	private void notifyListeners(Object object, String property, int oldValue, int newValue) {
+	private void notifyListeners(Object object, String property, Object oldValue, Object newValue) {
 		for (PropertyChangeListener pcl : listeners) {
 			pcl.propertyChange(new PropertyChangeEvent(this, property, oldValue, newValue));
 		}
@@ -206,12 +208,12 @@ public abstract class Model {
 	}
 
 	public void increaseFoodGathered() {
-		notifyListeners(this, "foodGathered", foodGathered, foodGathered + 1);
+		notifyListeners(this, "FoodGathered", foodGathered, foodGathered + 1);
 		foodGathered++;
 	}
 
 	public void setFoodGathered(int value) {
-		notifyListeners(this, "foodGathered", foodGathered, value);
+		notifyListeners(this, "FoodGathered", foodGathered, value);
 		foodGathered = value;
 	}
 }
