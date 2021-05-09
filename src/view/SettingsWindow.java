@@ -36,17 +36,6 @@ public class SettingsWindow {
 	private List<PropertyChangeListener> listeners = new ArrayList<>();
 
 	private JFrame frame;
-	private JLabel foodGatheredLabel;
-	private JLabel modelTicksLabel;
-	private JSlider modelSpeedSlider;
-	private JSlider cellCountSlider;
-	private JSlider pheromoneStrengthSlider;
-	private JSlider pheromoneEvaporationSlider;
-	private JSlider pheromoneFallOffSlider;
-	private JSlider moveRandomizationSlider;
-	private JSlider maximumPheromoneSlider;
-	private JSpinner antCountInput;
-	private JButton playPauseButton;
 	private String title;
 	private int width;
 	private int height;
@@ -101,7 +90,7 @@ public class SettingsWindow {
 		mainPanel.add(howTo);
 
 		// Grid cell count slider
-		cellCountSlider = new JSlider(10, 100, 30);
+		JSlider cellCountSlider = new JSlider(10, 100, 30);
 		cellCountSlider.setBorder(BorderFactory.createTitledBorder("Grid Size: 30"));
 		cellCountSlider.setPreferredSize(new Dimension(width - 30, 50));
 		cellCountSlider.addChangeListener(new ChangeListener() {
@@ -118,7 +107,7 @@ public class SettingsWindow {
 		mainPanel.add(cellCountSlider);
 
 		// Pheromone strength slider
-		pheromoneStrengthSlider = new JSlider(0, 500, 80);
+		JSlider pheromoneStrengthSlider = new JSlider(0, 500, 80);
 		pheromoneStrengthSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Strength: 8,0"));
 		pheromoneStrengthSlider.setPreferredSize(new Dimension(width - 30, 50));
 		pheromoneStrengthSlider.addChangeListener(new ChangeListener() {
@@ -136,7 +125,7 @@ public class SettingsWindow {
 		mainPanel.add(pheromoneStrengthSlider);
 
 		// Pheromone evaporation speed slider
-		pheromoneEvaporationSlider = new JSlider(0, 400, 95);
+		JSlider pheromoneEvaporationSlider = new JSlider(0, 400, 95);
 		pheromoneEvaporationSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Evaporation Speed: 0,95"));
 		pheromoneEvaporationSlider.setPreferredSize(new Dimension(width - 30, 50));
 		pheromoneEvaporationSlider.addChangeListener(new ChangeListener() {
@@ -154,7 +143,7 @@ public class SettingsWindow {
 		mainPanel.add(pheromoneEvaporationSlider);
 
 		// Pheromone falloff slider
-		pheromoneFallOffSlider = new JSlider(0, 100, 65);
+		JSlider pheromoneFallOffSlider = new JSlider(0, 100, 65);
 		pheromoneFallOffSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Falloff Ratio: 65 %"));
 		pheromoneFallOffSlider.setPreferredSize(new Dimension(width - 30, 50));
 		pheromoneFallOffSlider.addChangeListener(new ChangeListener() {
@@ -176,7 +165,7 @@ public class SettingsWindow {
 		mainPanel.add(pheromoneFallOffSlider);
 
 		// Movement randomization slider
-		moveRandomizationSlider = new JSlider(0, 100, 1);
+		JSlider moveRandomizationSlider = new JSlider(0, 100, 1);
 		moveRandomizationSlider.setBorder(BorderFactory.createTitledBorder("Random Movement Chance: 1 %"));
 		moveRandomizationSlider.setPreferredSize(new Dimension(width - 30, 50));
 		moveRandomizationSlider.addChangeListener(new ChangeListener() {
@@ -194,7 +183,7 @@ public class SettingsWindow {
 		mainPanel.add(moveRandomizationSlider);
 
 		// Maximum pheromone saturation slider
-		maximumPheromoneSlider = new JSlider(1, 1000, 500);
+		JSlider maximumPheromoneSlider = new JSlider(1, 1000, 500);
 		maximumPheromoneSlider.setBorder(BorderFactory.createTitledBorder("Maximum Pheromone per Cell: 500"));
 		maximumPheromoneSlider.setPreferredSize(new Dimension(width - 30, 50));
 		maximumPheromoneSlider.addChangeListener(new ChangeListener() {
@@ -212,7 +201,7 @@ public class SettingsWindow {
 		mainPanel.add(maximumPheromoneSlider);
 
 		// Ant count spinner
-		antCountInput = new JSpinner(new SpinnerNumberModel(0, 0, 500, 1));
+		JSpinner antCountInput = new JSpinner(new SpinnerNumberModel(0, 0, 500, 1));
 		antCountInput.setPreferredSize(new Dimension(width / 3 - 10, 50));
 		antCountInput.setBorder(BorderFactory.createTitledBorder("Ant Count:"));
 
@@ -234,7 +223,7 @@ public class SettingsWindow {
 		mainPanel.add(antCountInput);
 
 		// Model ticks label
-		modelTicksLabel = new JLabel("0", SwingConstants.CENTER);
+		JLabel modelTicksLabel = new JLabel("0", SwingConstants.CENTER);
 		modelTicksLabel.setBorder(BorderFactory.createTitledBorder("Model Ticks:"));
 		modelTicksLabel.setPreferredSize(new Dimension(width / 3 - 10, 50));
 		controller.getModel().addChangeListener(new PropertyChangeListener() {
@@ -248,7 +237,7 @@ public class SettingsWindow {
 		mainPanel.add(modelTicksLabel);
 
 		// Food gathered label
-		foodGatheredLabel = new JLabel("0", SwingConstants.CENTER);
+		JLabel foodGatheredLabel = new JLabel("0", SwingConstants.CENTER);
 		foodGatheredLabel.setBorder(BorderFactory.createTitledBorder("Food Gathered:"));
 		foodGatheredLabel.setPreferredSize(new Dimension(width / 3 - 10, 50));
 		controller.getModel().addChangeListener(new PropertyChangeListener() {
@@ -262,7 +251,7 @@ public class SettingsWindow {
 		mainPanel.add(foodGatheredLabel);
 
 		// Play/Pause Button
-		playPauseButton = new JButton("Play");
+		JButton playPauseButton = new JButton("Play");
 		playPauseButton.setPreferredSize(new Dimension(width / 3 - 10, 60));
 		playPauseButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -305,7 +294,7 @@ public class SettingsWindow {
 		mainPanel.add(clearGridButton);
 
 		// Simulation speed slider
-		modelSpeedSlider = new JSlider(1, 60, 30);
+		JSlider modelSpeedSlider = new JSlider(1, 60, 30);
 		modelSpeedSlider.setBorder(BorderFactory.createTitledBorder("Simulation Ticks/s: 30"));
 		modelSpeedSlider.setPreferredSize(new Dimension(width - 30, 50));
 		modelSpeedSlider.addChangeListener(new ChangeListener() {
@@ -367,9 +356,5 @@ public class SettingsWindow {
 
 	public JFrame getFrame() {
 		return frame;
-	}
-
-	public JSpinner getAntCountInput() {
-		return antCountInput;
 	}
 }
