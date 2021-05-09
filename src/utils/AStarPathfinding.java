@@ -41,8 +41,8 @@ public class AStarPathfinding {
 				for (GridNode gn : path) {
 					g.setColor(Color.red);
 					g.fillRect((gn.getBounds().x + gn.getBounds().width / 3) + grid.getOffset() / 3,
-							(gn.getBounds().y + gn.getBounds().width / 3) + grid.getOffset() / 3,
-							gn.getBounds().width / 3, gn.getBounds().width / 3);
+							(gn.getBounds().y + gn.getBounds().height / 3) + grid.getOffset() / 3,
+							gn.getBounds().width / 3, gn.getBounds().height / 3);
 				}
 			}
 		}
@@ -82,7 +82,7 @@ public class AStarPathfinding {
 		GridNode endNode = grid.getNode(endX, endY);
 
 		if (startNode == endNode) {
-			return null;
+			return new ArrayList<>();
 		}
 		openNodes.add(startNode);
 
@@ -139,7 +139,7 @@ public class AStarPathfinding {
 		}
 
 		// Ran out of nodes on the openNodes list - No path found
-		return null;
+		return new ArrayList<>();
 	}
 
 	/**
