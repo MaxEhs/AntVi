@@ -38,7 +38,6 @@ public class SettingsWindow {
 	private JFrame frame;
 	private JLabel foodGatheredLabel;
 	private JLabel modelTicksLabel;
-	private JPanel mainPanel;
 	private JSlider modelSpeedSlider;
 	private JSlider cellCountSlider;
 	private JSlider pheromoneStrengthSlider;
@@ -76,7 +75,7 @@ public class SettingsWindow {
 	}
 
 	/**
-	 * Used for initializing the settings window + event triggers
+	 * Initializing the settings window components + event handling
 	 */
 	private void createSettingsWindow() {
 
@@ -89,7 +88,7 @@ public class SettingsWindow {
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 
-		mainPanel = new JPanel();
+		JPanel mainPanel = new JPanel();
 		frame.add(mainPanel);
 
 		// How-to Label
@@ -106,7 +105,7 @@ public class SettingsWindow {
 		cellCountSlider.setBorder(BorderFactory.createTitledBorder("Grid Size: 30"));
 		cellCountSlider.setPreferredSize(new Dimension(width - 30, 50));
 		cellCountSlider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent event) {
+			public void stateChanged(ChangeEvent e) {
 
 				cellCountSlider.setBorder(
 						BorderFactory.createTitledBorder(String.format("Grid Size: %s", cellCountSlider.getValue())));
@@ -123,7 +122,7 @@ public class SettingsWindow {
 		pheromoneStrengthSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Strength: 8,0"));
 		pheromoneStrengthSlider.setPreferredSize(new Dimension(width - 30, 50));
 		pheromoneStrengthSlider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent event) {
+			public void stateChanged(ChangeEvent e) {
 
 				double value = (double) pheromoneStrengthSlider.getValue() / 10D;
 				pheromoneStrengthSlider
@@ -141,7 +140,7 @@ public class SettingsWindow {
 		pheromoneEvaporationSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Evaporation Speed: 0,95"));
 		pheromoneEvaporationSlider.setPreferredSize(new Dimension(width - 30, 50));
 		pheromoneEvaporationSlider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent event) {
+			public void stateChanged(ChangeEvent e) {
 
 				double value = (double) pheromoneEvaporationSlider.getValue() / 100D;
 				pheromoneEvaporationSlider.setBorder(
@@ -159,7 +158,7 @@ public class SettingsWindow {
 		pheromoneFallOffSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Falloff Ratio: 65 %"));
 		pheromoneFallOffSlider.setPreferredSize(new Dimension(width - 30, 50));
 		pheromoneFallOffSlider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent event) {
+			public void stateChanged(ChangeEvent e) {
 
 				double value = (double) pheromoneFallOffSlider.getValue();
 				if (value <= 0) {
@@ -181,7 +180,7 @@ public class SettingsWindow {
 		moveRandomizationSlider.setBorder(BorderFactory.createTitledBorder("Random Movement Chance: 1 %"));
 		moveRandomizationSlider.setPreferredSize(new Dimension(width - 30, 50));
 		moveRandomizationSlider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent event) {
+			public void stateChanged(ChangeEvent e) {
 
 				double value = (double) moveRandomizationSlider.getValue() / 100D;
 				moveRandomizationSlider.setBorder(BorderFactory
@@ -199,7 +198,7 @@ public class SettingsWindow {
 		maximumPheromoneSlider.setBorder(BorderFactory.createTitledBorder("Maximum Pheromone per Cell: 500"));
 		maximumPheromoneSlider.setPreferredSize(new Dimension(width - 30, 50));
 		maximumPheromoneSlider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent event) {
+			public void stateChanged(ChangeEvent e) {
 
 				int value = maximumPheromoneSlider.getValue();
 				maximumPheromoneSlider.setBorder(
@@ -216,12 +215,22 @@ public class SettingsWindow {
 		antCountInput = new JSpinner(new SpinnerNumberModel(0, 0, 500, 1));
 		antCountInput.setPreferredSize(new Dimension(width / 3 - 10, 50));
 		antCountInput.setBorder(BorderFactory.createTitledBorder("Ant Count:"));
-		antCountInput.addChangeListener(new ChangeListener() {
 
-			public void stateChanged(ChangeEvent event) {
+		antCountInput.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
 				notifyListeners(this, "AntCountChanged", null, antCountInput.getValue());
 			}
 		});
+
+		controller.getModel().addChangeListener(new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent e) {
+				if ("ModelChangedAntCount".equals(e.getPropertyName())) {
+					// The ant count changed, probably because the Grid was scaled down
+					antCountInput.setValue(e.getNewValue());
+				}
+			}
+		});
+
 		mainPanel.add(antCountInput);
 
 		// Model ticks label
@@ -230,9 +239,9 @@ public class SettingsWindow {
 		modelTicksLabel.setPreferredSize(new Dimension(width / 3 - 10, 50));
 		controller.getModel().addChangeListener(new PropertyChangeListener() {
 
-			public void propertyChange(PropertyChangeEvent evt) {
-				if ("ModelTicks".equals(evt.getPropertyName())) {
-					modelTicksLabel.setText(String.format("%s", evt.getNewValue()));
+			public void propertyChange(PropertyChangeEvent e) {
+				if ("ModelTicks".equals(e.getPropertyName())) {
+					modelTicksLabel.setText(String.format("%s", e.getNewValue()));
 				}
 			}
 		});
@@ -244,9 +253,9 @@ public class SettingsWindow {
 		foodGatheredLabel.setPreferredSize(new Dimension(width / 3 - 10, 50));
 		controller.getModel().addChangeListener(new PropertyChangeListener() {
 
-			public void propertyChange(PropertyChangeEvent evt) {
-				if ("FoodGathered".equals(evt.getPropertyName())) {
-					foodGatheredLabel.setText(String.format("%s", evt.getNewValue()));
+			public void propertyChange(PropertyChangeEvent e) {
+				if ("FoodGathered".equals(e.getPropertyName())) {
+					foodGatheredLabel.setText(String.format("%s", e.getNewValue()));
 				}
 			}
 		});
@@ -277,7 +286,7 @@ public class SettingsWindow {
 			public void actionPerformed(ActionEvent e) {
 
 				notifyListeners(this, "ResetModel", null, true);
-				playPauseButton.setText("Play Simulation");
+				playPauseButton.setText("Play");
 				antCountInput.setValue(0);
 			}
 		});
@@ -300,7 +309,7 @@ public class SettingsWindow {
 		modelSpeedSlider.setBorder(BorderFactory.createTitledBorder("Simulation Ticks/s: 30"));
 		modelSpeedSlider.setPreferredSize(new Dimension(width - 30, 50));
 		modelSpeedSlider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent event) {
+			public void stateChanged(ChangeEvent e) {
 
 				modelSpeedSlider.setBorder(BorderFactory
 						.createTitledBorder(String.format("Simulation Ticks/s: %s", modelSpeedSlider.getValue())));

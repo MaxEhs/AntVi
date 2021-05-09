@@ -52,6 +52,7 @@ public abstract class Model {
 		synchronized (ants) {
 			synchronized (grid) {
 				// Removing ants that are outside of the Grid (after scaling the Grid)
+				int temp = ants.size();
 				Queue<Ant> tempQueue = new LinkedList<>();
 				while (!ants.isEmpty()) {
 					Ant tempAnt = ants.poll();
@@ -59,9 +60,12 @@ public abstract class Model {
 						tempQueue.add(tempAnt);
 					}
 				}
-				// TODO build an event-based solution for this (JSpinner doesn't work with
-				// PropertyChangeListeners)
-				controller.getView().getSettingsWindow().getAntCountInput().setValue(tempQueue.size());
+
+				if (temp != tempQueue.size()) {
+					notifyListeners(this, "ModelChangedAntCount", null, tempQueue.size());
+					// controller.getView().getSettingsWindow().getAntCountInput().setValue(tempQueue.size());
+				}
+				
 				ants = tempQueue;
 
 				generateSolutions();

@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import grid.Grid;
 import grid.GridNode;
@@ -20,7 +21,7 @@ public class AStarPathfinding {
 	private static final int MOVE_STRAIGHT_COST = 10;
 	private static final int MOVE_DIAGONAL_COST = 14; // +40% for diagonal movement
 	private Grid grid;
-	private List<List<GridNode>> paths = new ArrayList<>();
+	private CopyOnWriteArrayList<List<GridNode>> paths = new CopyOnWriteArrayList<>();
 
 	public AStarPathfinding(Grid grid) {
 		this.grid = grid;
@@ -35,12 +36,14 @@ public class AStarPathfinding {
 	 * @param g the AWT Graphics to draw on
 	 */
 	public void render(Graphics g) {
-		for (List<GridNode> path : paths) { //TODO Make this safe against concurrentModificationExceptions
-			for (GridNode gn : path) {
-				g.setColor(Color.red);
-				g.fillRect((gn.getBounds().x + gn.getBounds().width / 3) + grid.getOffset() / 3,
-						(gn.getBounds().y + gn.getBounds().width / 3) + grid.getOffset() / 3, gn.getBounds().width / 3,
-						gn.getBounds().width / 3);
+		synchronized (paths) {
+			for (List<GridNode> path : paths) {
+				for (GridNode gn : path) {
+					g.setColor(Color.red);
+					g.fillRect((gn.getBounds().x + gn.getBounds().width / 3) + grid.getOffset() / 3,
+							(gn.getBounds().y + gn.getBounds().width / 3) + grid.getOffset() / 3,
+							gn.getBounds().width / 3, gn.getBounds().width / 3);
+				}
 			}
 		}
 	}
@@ -51,7 +54,7 @@ public class AStarPathfinding {
 	 */
 	public final void findAllNeighbours() {
 		// Resetting previously found paths
-		paths = new ArrayList<>();
+		paths = new CopyOnWriteArrayList<>();
 
 		// Finding neighbours
 		for (int x = 0; x < grid.getCellCount(); x++) {
