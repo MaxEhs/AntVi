@@ -22,8 +22,9 @@ public class Tile extends GridNode {
 	 * @param cellSize the cellSize based on the Grid
 	 * @param offset   the offset in absolute pixels
 	 */
-	Tile(Grid grid, int x, int y, int cellSize, int offset) {
+	Tile(Grid grid, int x, int y, int cellSize, int offset, boolean hovering) {
 		super(grid, x, y, cellSize, offset);
+		this.hovering = hovering;
 	}
 
 	@Override
@@ -37,12 +38,12 @@ public class Tile extends GridNode {
 
 		if (hovering && foodSourceButton) {
 			// Replace this Tile with a new FoodSource
-			grid.setNode(getX(), getY(), new FoodSource(grid, getX(), getY(), cellSize, offset));
+			grid.setNode(getX(), getY(), new FoodSource(grid, getX(), getY(), cellSize, offset, hovering));
 			grid.getFoodPositions().add(getGridPosition());
 		}
 		if (hovering && nestButton) {
 			// Replace this Tile with a Nest
-			grid.setNode(getX(), getY(), new Nest(grid, getX(), getY(), cellSize, offset));
+			grid.setNode(getX(), getY(), new Nest(grid, getX(), getY(), cellSize, offset, hovering));
 			// Update nest position list
 			grid.getNestPositions().add(getGridPosition());
 		}

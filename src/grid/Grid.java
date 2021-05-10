@@ -1,7 +1,11 @@
 package grid;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +29,9 @@ public class Grid {
 	private ArrayList<Point> nestPositions;
 	private ArrayList<Point> foodPositions;
 	private GridNode[][] nodes;
+	private Point clickedPoint;
+	private Point releasedPoint;
+	private Rectangle selection;
 
 	/**
 	 * Creates a grid of a certain size and with a certain amount of cells.
@@ -60,12 +67,12 @@ public class Grid {
 				for (int y = 0; y < cellCount; y++) {
 
 					// Filling the Grid with empty Tiles
-					nodes[x][y] = new Tile(this, x, y, cellSize, offset);
+					nodes[x][y] = new Tile(this, x, y, cellSize, offset, false);
 				}
 			}
 
 			// Placing first Nest at (0/0)
-			nodes[0][0] = new Nest(this, 0, 0, cellSize, offset);
+			nodes[0][0] = new Nest(this, 0, 0, cellSize, offset, false);
 			nestPositions.add(nodes[0][0].getGridPosition());
 		}
 	}
@@ -89,6 +96,7 @@ public class Grid {
 	 * @param g the AWT Graphics2D object to be used for rendering
 	 */
 	public synchronized void render(Graphics2D g) {
+		// Draw all GridNodes
 		synchronized (nodes) {
 			for (int x = 0; x < cellCount; x++) {
 				for (int y = 0; y < cellCount; y++) {
@@ -96,9 +104,17 @@ public class Grid {
 				}
 			}
 		}
+
+		// Draw the selection rectangle
+		if (selection != null) {
+			g.setColor(Color.RED);
+			g.setStroke(new BasicStroke(2.0f));
+			g.draw(selection);
+		}
 	}
 
 	public synchronized void onMouseMove(MouseEvent e) {
+		// Update GridNodes based on mouse position
 		synchronized (nodes) {
 			for (int x = 0; x < cellCount; x++) {
 				for (int y = 0; y < cellCount; y++) {
@@ -108,14 +124,43 @@ public class Grid {
 		}
 	}
 
+	public synchronized void onMousePressed(MouseEvent e) {
+		// Store mouse click position
+		clickedPoint = new Point(e.getPoint());
+	}
+
+	public synchronized void onMouseDragged(MouseEvent e) {
+		// Mouse dragged, build a selection rectangle
+		if (clickedPoint != null) {
+			releasedPoint = new Point(e.getPoint());
+
+			if (clickedPoint.distance(releasedPoint) > 4) {
+				selection = new Rectangle(clickedPoint);
+				selection.add(releasedPoint);
+			}
+		}
+	}
+
 	public synchronized void onMouseRelease(MouseEvent e) {
+
 		synchronized (nodes) {
 			for (int x = 0; x < cellCount; x++) {
 				for (int y = 0; y < cellCount; y++) {
-					nodes[x][y].onMouseRelease(e);
+					nodes[x][y].onMouseMove(e);
+					if (selection != null && selection.intersects(nodes[x][y].bounds) && nodes[x][y] instanceof Tile) {
+						// If there is a selection box, invert all Tiles inside it
+						nodes[x][y].setBlocking(!nodes[x][y].isBlocking());
+					} else {
+						// If there is no selection box, a GridNode was clicked
+						nodes[x][y].onMouseRelease(e);
+					}
 				}
 			}
 		}
+		// Reset selection
+		clickedPoint = null;
+		releasedPoint = null;
+		selection = null;
 	}
 
 	private void calculateOffset() {

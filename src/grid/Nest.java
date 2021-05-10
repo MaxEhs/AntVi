@@ -21,8 +21,10 @@ public class Nest extends GridNode {
 	 * @param cellSize the cellSize based on the Grid
 	 * @param offset   the offset in absolute pixels
 	 */
-	protected Nest(Grid grid, int x, int y, int cellSize, int offset) {
+	protected Nest(Grid grid, int x, int y, int cellSize, int offset, boolean hovering) {
 		super(grid, x, y, cellSize, offset);
+		this.hovering = hovering;
+		blocking = false;
 	}
 
 	@Override
@@ -30,7 +32,8 @@ public class Nest extends GridNode {
 		if (grid.getNestPositions().size() > 1 && hovering
 				&& grid.getController().getKeyManager().keyJustPressed(KeyEvent.VK_N)) {
 			// Remove existing Nest, but always keep at least one
-			grid.setNode(getX(), getY(), new Tile(grid, getX(), getY(), grid.getCellSize(), grid.getOffset()));
+			grid.setNode(getX(), getY(),
+					new Tile(grid, getX(), getY(), grid.getCellSize(), grid.getOffset(), hovering));
 			grid.getNestPositions().remove(getGridPosition());
 		}
 	}
@@ -41,13 +44,11 @@ public class Nest extends GridNode {
 		g.setColor(new Color(133, 87, 35));
 		// Display this Nest
 		g.fillRect(bounds.x + 1, bounds.y + 1, bounds.width - 1, bounds.height - 1);
-
 	}
 
 	@Override
 	public void onClick() {
 		// Nothing to do.
-
 	}
 
 }

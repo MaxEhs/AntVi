@@ -30,6 +30,8 @@ public class MouseManager implements MouseListener, MouseMotionListener {
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
 			rightPressed = true;
 		}
+
+		grid.onMousePressed(e);
 	}
 
 	@Override
@@ -50,7 +52,7 @@ public class MouseManager implements MouseListener, MouseMotionListener {
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
+		grid.onMouseDragged(e);
 
 	}
 

@@ -21,8 +21,9 @@ public class FoodSource extends GridNode {
 	 * @param cellSize the cellSize based on the Grid
 	 * @param offset   the offset in absolute pixels
 	 */
-	protected FoodSource(Grid grid, int x, int y, int cellSize, int offset) {
+	protected FoodSource(Grid grid, int x, int y, int cellSize, int offset, boolean hovering) {
 		super(grid, x, y, cellSize, offset);
+		this.hovering = hovering;
 		blocking = false;
 	}
 
@@ -30,7 +31,8 @@ public class FoodSource extends GridNode {
 	public void tick() {
 		if (hovering && grid.getController().getKeyManager().keyJustPressed(KeyEvent.VK_F)) {
 			// Remove existing FoodSource
-			grid.setNode(getX(), getY(), new Tile(grid, getX(), getY(), grid.getCellSize(), grid.getOffset()));
+			grid.setNode(getX(), getY(),
+					new Tile(grid, getX(), getY(), grid.getCellSize(), grid.getOffset(), hovering));
 			grid.getFoodPositions().remove(getGridPosition());
 		}
 	}
@@ -39,13 +41,11 @@ public class FoodSource extends GridNode {
 	public void render(Graphics g) {
 		g.setColor(Color.GREEN);
 		g.fillRect(bounds.x + 1, bounds.y + 1, bounds.width - 1, bounds.height - 1);
-
 	}
 
 	@Override
 	public void onClick() {
 		// Nothing to do.
-
 	}
 
 }
