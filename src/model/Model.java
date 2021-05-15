@@ -63,7 +63,6 @@ public abstract class Model {
 
 				if (temp != tempQueue.size()) {
 					notifyListeners(this, "ModelChangedAntCount", null, tempQueue.size());
-					// controller.getView().getSettingsWindow().getAntCountInput().setValue(tempQueue.size());
 				}
 				
 				ants = tempQueue;
