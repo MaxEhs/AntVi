@@ -65,12 +65,12 @@ public class TwoPheromoneExample extends Model {
 			if (ant.isCarryingFood()) {
 
 				// Probably move to node with highest pheromone one
-				bestChoice = ant.getNodeByProbablility(PHEROMONE_ONE, lookingAt, random, true, true);
+				bestChoice = ant.getNodeByProbablility(PHEROMONE_ONE, lookingAt, random, true, true, 1.1D);
 
 			} else {
 
 				// Probably move to node with highest pheromone two
-				bestChoice = ant.getNodeByProbablility(PHEROMONE_TWO, lookingAt, random, true, true);
+				bestChoice = ant.getNodeByProbablility(PHEROMONE_TWO, lookingAt, random, true, true, 1.1D);
 			}
 
 			if (bestChoice != null) {
@@ -127,11 +127,11 @@ public class TwoPheromoneExample extends Model {
 	public void pheromoneUpdate() {
 		for (int x = 0; x < getGrid().getCellCount(); x++) {
 			for (int y = 0; y < getGrid().getCellCount(); y++) {
-				// Iterating through all GridNodes and decreasing all pheromones
+				// Iterating through all GridNodes
 				GridNode tempNode = getGrid().getNode(x, y);
 				for (int i = 0; i < tempNode.getPheromones().length; i++) {
 
-					// Dissipate pheromone to surrounding GridNodes
+					// Naive implementation of dissipation of pheromone to surrounding GridNodes
 					if (isUsingDissipation()) {
 						for (GridNode gn : tempNode.getNearbyNodes()) {
 

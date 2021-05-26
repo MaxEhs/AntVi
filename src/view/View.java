@@ -6,7 +6,7 @@ import java.awt.Toolkit;
 import controller.Controller;
 
 /**
- * The AntVi View class. It manages the two application windows.
+ * The AntVi View class - It manages the two application windows.
  * 
  * @author Max Ehringhausen
  *

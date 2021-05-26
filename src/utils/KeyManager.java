@@ -4,7 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 /**
- * The AntVi KeyManager class. It implements the AWT KeyListener to provide
+ * The AntVi KeyManager class - It implements the AWT KeyListener to provide
  * interactivity.
  * 
  * @author Max Ehringhausen

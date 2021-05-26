@@ -12,7 +12,8 @@ import java.util.List;
 import controller.Controller;
 
 /**
- * The AntVi Grid class. It manages all GridNodes and has corresponding methods.
+ * The AntVi Grid class - It manages all GridNodes and has corresponding
+ * methods.
  * 
  * @author Max Ehringhausen
  *
@@ -35,8 +36,9 @@ public class Grid {
 	/**
 	 * Creates a grid of a certain size and with a certain amount of cells.
 	 * 
-	 * @param cellCount the amount of columns or rows in the Grid
-	 * @param size      the overall width in pixels. A Grid is always rectangular
+	 * @param controller the global Controller object
+	 * @param cellCount  the amount of columns or rows in the Grid
+	 * @param size       the overall width in pixels. A Grid is always rectangular
 	 */
 	public Grid(Controller controller, int cellCount, int size) {
 

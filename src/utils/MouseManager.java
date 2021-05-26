@@ -7,7 +7,7 @@ import java.awt.event.MouseMotionListener;
 import grid.Grid;
 
 /**
- * The AntVi MouseManager class. It implements the AWT MouseListener and
+ * The AntVi MouseManager class - It implements the AWT MouseListener and
  * MouseMotionListener to provide interactivity.
  * 
  * @author Max Ehringhausen

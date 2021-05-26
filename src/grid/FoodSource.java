@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 
 /**
- * The AntVi FoodSource class. One of the three types of GridNodes.
+ * The AntVi FoodSource class - One of the three types of GridNodes.
  * 
  * @author Max Ehringhausen
  *
@@ -20,6 +20,7 @@ public class FoodSource extends GridNode {
 	 * @param y        the y-coordinate in the Grid
 	 * @param cellSize the cellSize based on the Grid
 	 * @param offset   the offset in absolute pixels
+	 * @param hovering whether the mouse is hovering over this GridNode
 	 */
 	protected FoodSource(Grid grid, int x, int y, int cellSize, int offset, boolean hovering) {
 		super(grid, x, y, cellSize, offset);

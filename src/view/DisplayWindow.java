@@ -7,8 +7,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 /**
- * The AntVi DisplayWindow class. It contains the canvas that is used to display
- * the Grid and everything on it.
+ * The AntVi DisplayWindow class - It contains the canvas that is used to
+ * display the Grid and everything on it.
  * 
  * @author Max Ehringhausen
  *

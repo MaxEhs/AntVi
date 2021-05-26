@@ -17,7 +17,7 @@ import utils.MouseManager;
 import view.View;
 
 /**
- * The AntVi Controller class. It manages all other components, as well as the
+ * The AntVi Controller class - It manages all other components, as well as the
  * main simulation and update loop.
  * 
  * @author Max Ehringhausen
@@ -43,8 +43,12 @@ public class Controller implements Runnable {
 
 	public Controller(int width, int height) {
 		grid = new Grid(this, DEFAULT_GRID_CELL_COUNT, height);
+
+		// SET THE MODEL TO BE USED HERE
 		model = new TwoPheromoneExample(this, grid);
-		// Initiate Grid and Model before the View, or the event system breaks
+		// ----------------------------
+
+		// Initiate Grid and Model before the View, otherwise the event system breaks
 		view = new View(this, width, height);
 		keyManager = new KeyManager();
 		pathfinding = new AStarPathfinding(grid);
@@ -77,7 +81,7 @@ public class Controller implements Runnable {
 					model.setPheromoneFallOff((double) e.getNewValue());
 					break;
 				case "RandomMoveChanceChanged":
-					model.setRandomTurnChance((double) e.getNewValue());
+					model.setRandomMoveChance((double) e.getNewValue());
 					break;
 				case "MaximumSaturationChanged":
 					GridNode.setMaxPheromone((int) e.getNewValue());

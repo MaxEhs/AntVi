@@ -3,7 +3,7 @@ package utils;
 import grid.GridNode;
 
 /**
- * The AntVi GridNodeWithPercentage class. This is a helper class used by the
+ * The AntVi GridNodeWithPercentage class - This is a helper class used by the
  * Ant class to roll for probabilities.
  * 
  * @author Max Ehringhausen

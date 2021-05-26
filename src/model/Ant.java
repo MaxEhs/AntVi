@@ -22,7 +22,7 @@ import grid.Tile;
 import utils.GridNodeWithPercentage;
 
 /**
- * The AntVi Ant class. It contains methods to create Ant behaviour with, as
+ * The AntVi Ant class - It contains methods to create Ant behaviour with, as
  * well as a render method for graphics.
  * 
  * @author Max Ehringhausen
@@ -44,6 +44,12 @@ public class Ant {
 		UP, DOWN, LEFT, RIGHT, UPLEFT, UPRIGHT, DOWNLEFT, DOWNRIGHT
 	}
 
+	/**
+	 * Creates an Ant object.
+	 * 
+	 * @param model    the model this Ant belongs to
+	 * @param position the Grid position of the ant
+	 */
 	public Ant(Model model, Point position) {
 		this.model = model;
 		this.position = position;
@@ -59,6 +65,12 @@ public class Ant {
 		this.facing = directions.get(rand.nextInt(directions.size()));
 	}
 
+	/**
+	 * This is called by the model and renders the ant with its current position and
+	 * rotation.
+	 * 
+	 * @param g the Graphics object used for rendering
+	 */
 	public void render(Graphics g) {
 
 		int gridCellSize = model.getGrid().getCellSize();
@@ -328,6 +340,12 @@ public class Ant {
 		}
 	}
 
+	/**
+	 * Moves the ant to a specific GridNode - Rotation and memory are handled based
+	 * on where the ant came from.
+	 * 
+	 * @param gn the GridNode to move to
+	 */
 	public void moveTo(GridNode gn) {
 
 		if (gn == null) {
@@ -457,10 +475,13 @@ public class Ant {
 	 *                          preferred
 	 * @param useAggressiveBias will make it more likely that the GridNode with the
 	 *                          highest pheromone concentration is chosen
+	 * @param biasAmount        how much more likely it should be that the GridNode
+	 *                          with the highest pheromone concentration is chosen
+	 *                          (1.5 would be 50% chance increase)
 	 * @return the node that was picked.
 	 */
 	public GridNode getNodeByProbablility(int pheromone, List<GridNode> nodes, Random random, boolean preferNestAndFood,
-			boolean useAggressiveBias) {
+			boolean useAggressiveBias, double biasAmount) {
 
 		if (nodes.isEmpty()) {
 			return null;
@@ -489,7 +510,8 @@ public class Ant {
 			if (useAggressiveBias && gn == highest) {
 
 				// Make the node with highest concentration twice as likely to be chosen
-				double pheromoneSaturation = (gn.getPheromoneAmount(pheromone) / GridNode.getMaxPheromone()) * 1.25;
+				double pheromoneSaturation = (gn.getPheromoneAmount(pheromone) / GridNode.getMaxPheromone())
+						* biasAmount;
 				chanceList.add(new GridNodeWithPercentage(gn, pheromoneSaturation));
 				totalPercentages += pheromoneSaturation;
 
@@ -551,49 +573,104 @@ public class Ant {
 		}
 	}
 
+	/**
+	 * Gets the direction this ant is currently facing.
+	 * 
+	 * @return the direction
+	 */
 	public Facing getFacing() {
 		return facing;
 	}
 
+	/**
+	 * Gets the direction this ant is currently facing.
+	 * 
+	 * @param facing the direction
+	 */
 	public void setFacing(Facing facing) {
 		this.facing = facing;
 	}
 
+	/**
+	 * Returns this ants position on the Grid.
+	 * 
+	 * @return the position of the ant as Point
+	 */
 	public Point getPosition() {
 		return position;
 	}
 
+	/**
+	 * Sets this ants position on the Grid.
+	 * 
+	 * @param position the new position of the ant as Point
+	 */
 	public void setPosition(Point position) {
 		this.position = position;
 	}
 
+	/**
+	 * Whether this ant is currently carrying food.
+	 * 
+	 * @return true if this ant is carrying food, false otherwise
+	 */
 	public boolean isCarryingFood() {
 		return carryingFood;
 	}
 
+	/**
+	 * Sets the carryingFood flag - Also clears the ants short-term memory.
+	 * 
+	 * @param carryingFood whether the ant is carrying food or not
+	 */
 	public void setCarryingFood(boolean carryingFood) {
 		this.carryingFood = carryingFood;
 
-		// Also clear short-term memory
+		// clear short-term memory
 		lastWalked.clear();
 	}
 
+	/**
+	 * Gets the amount of steps an ant has walked since the last reset.
+	 * 
+	 * @return the amount of steps walked
+	 */
 	public int getStepsWalked() {
 		return stepsWalked;
 	}
 
+	/**
+	 * Gets the size of the short-term memory buffer of this ant.
+	 * 
+	 * @return an int with the size of the short-term memory
+	 */
 	public static int getShortTermMemorySize() {
 		return shortTermMemorySize;
 	}
 
+	/**
+	 * Sets the size of the short-term memory buffer of this ant.
+	 * 
+	 * @param shortTermMemorySize the new size of the short-term memory
+	 */
 	public static void setShortTermMemorySize(int shortTermMemorySize) {
 		Ant.shortTermMemorySize = shortTermMemorySize;
 	}
 
+	/**
+	 * Gets a Queue of the last Tiles this ant has walked on - The size of the Queue
+	 * is based on the size of the short-term memory of this ant.
+	 * 
+	 * @return a Queue containing the last Tiles this ant has walked on
+	 */
 	public Queue<GridNode> getLastWalked() {
 		return lastWalked;
 	}
 
+	/**
+	 * Increases the steps this ant walked by one - The steps walked are only
+	 * relevant if the pheromone falloff mechanic is used.
+	 */
 	public void increaseStepsWalked() {
 		if (model.isUsingFallOff()) {
 			stepsWalked++;
@@ -602,12 +679,12 @@ public class Ant {
 		}
 	}
 
+	/**
+	 * Resets the steps this ant walked since the last reset - The steps walked are
+	 * only relevant if the pheromone falloff mechanic is used.
+	 */
 	public void resetStepsWalked() {
 		stepsWalked = 1;
-	}
-
-	public void setStepsWalked(int stepsWalked) {
-		this.stepsWalked = stepsWalked;
 	}
 
 }

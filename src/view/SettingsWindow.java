@@ -24,7 +24,7 @@ import javax.swing.event.ChangeListener;
 import controller.Controller;
 
 /**
- * The AntVi SettingsWindow class. This class belongs to the GUI and contains
+ * The AntVi SettingsWindow class - This class belongs to the GUI and contains
  * all interactive elements that have to do with the Simulation.
  * 
  * @author Max Ehringhausen

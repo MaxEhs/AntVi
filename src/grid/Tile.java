@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 
 /**
- * The AntVi Tile class. One of the three types of GridNodes. Contains logic for
+ * The AntVi Tile class - One of the three types of GridNodes - Contains logic for
  * interactions, rendering, and pathfinding.
  * 
  * @author Max Ehringhausen
@@ -21,6 +21,7 @@ public class Tile extends GridNode {
 	 * @param y        the y-coordinate in the Grid
 	 * @param cellSize the cellSize based on the Grid
 	 * @param offset   the offset in absolute pixels
+	 * @param hovering whether the mouse is hovering over this GridNode
 	 */
 	Tile(Grid grid, int x, int y, int cellSize, int offset, boolean hovering) {
 		super(grid, x, y, cellSize, offset);
