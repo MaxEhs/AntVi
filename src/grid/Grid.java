@@ -109,7 +109,7 @@ public class Grid {
 		// Draw the selection rectangle
 		if (selection != null) {
 			g.setColor(Color.RED);
-			g.setStroke(new BasicStroke(2.0f));
+			g.setStroke(new BasicStroke(2.0F));
 			g.draw(selection);
 		}
 	}
