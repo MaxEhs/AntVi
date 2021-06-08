@@ -107,8 +107,8 @@ public class SettingsWindow {
 		mainPanel.add(cellCountSlider);
 
 		// Pheromone strength slider
-		JSlider pheromoneStrengthSlider = new JSlider(0, 500, 80);
-		pheromoneStrengthSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Strength: 8,0"));
+		JSlider pheromoneStrengthSlider = new JSlider(0, 800, 250);
+		pheromoneStrengthSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Strength: 25,0"));
 		pheromoneStrengthSlider.setPreferredSize(new Dimension(width - 30, 50));
 		pheromoneStrengthSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
@@ -125,8 +125,8 @@ public class SettingsWindow {
 		mainPanel.add(pheromoneStrengthSlider);
 
 		// Pheromone evaporation speed slider
-		JSlider pheromoneEvaporationSlider = new JSlider(0, 400, 95);
-		pheromoneEvaporationSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Evaporation Speed: 0,95"));
+		JSlider pheromoneEvaporationSlider = new JSlider(0, 600, 50);
+		pheromoneEvaporationSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Evaporation Speed: 0,50"));
 		pheromoneEvaporationSlider.setPreferredSize(new Dimension(width - 30, 50));
 		pheromoneEvaporationSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
@@ -143,18 +143,18 @@ public class SettingsWindow {
 		mainPanel.add(pheromoneEvaporationSlider);
 
 		// Pheromone falloff slider
-		JSlider pheromoneFallOffSlider = new JSlider(0, 100, 65);
-		pheromoneFallOffSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Falloff Ratio: 65 %"));
+		JSlider pheromoneFallOffSlider = new JSlider(0, 100, 20);
+		pheromoneFallOffSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Falloff Ratio Per Ant Step: 0,020 %"));
 		pheromoneFallOffSlider.setPreferredSize(new Dimension(width - 30, 50));
 		pheromoneFallOffSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 
-				double value = (double) pheromoneFallOffSlider.getValue();
+				double value = (double) pheromoneFallOffSlider.getValue()/1000D;
 				if (value <= 0) {
-					pheromoneFallOffSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Falloff Ratio: OFF"));
+					pheromoneFallOffSlider.setBorder(BorderFactory.createTitledBorder("Pheromone Falloff Ratio Per Ant Step: OFF"));
 				} else {
 					pheromoneFallOffSlider.setBorder(
-							BorderFactory.createTitledBorder(String.format("Pheromone Falloff Ratio: %.0f %%", value)));
+							BorderFactory.createTitledBorder(String.format("Pheromone Falloff Ratio Per Ant Step: %.3f %%", value)));
 				}
 
 				if (!pheromoneFallOffSlider.getValueIsAdjusting()) {
@@ -183,8 +183,8 @@ public class SettingsWindow {
 		mainPanel.add(moveRandomizationSlider);
 
 		// Maximum pheromone saturation slider
-		JSlider maximumPheromoneSlider = new JSlider(1, 1000, 500);
-		maximumPheromoneSlider.setBorder(BorderFactory.createTitledBorder("Maximum Pheromone per Cell: 500"));
+		JSlider maximumPheromoneSlider = new JSlider(1, 1000, 300);
+		maximumPheromoneSlider.setBorder(BorderFactory.createTitledBorder("Maximum Pheromone per Cell: 300"));
 		maximumPheromoneSlider.setPreferredSize(new Dimension(width - 30, 50));
 		maximumPheromoneSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {

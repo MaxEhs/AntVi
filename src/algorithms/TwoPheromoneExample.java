@@ -88,14 +88,13 @@ public class TwoPheromoneExample extends Model {
 
 				// Deposit pheromone two on current node
 				getGrid().getNode(ant.getPosition()).increasePheromoneBy(PHEROMONE_TWO,
-						getPheromoneStrength() / (ant.getStepsWalked() / getPheromoneFallOff()));
+						getPheromoneStrength() * Math.pow(1 - getPheromoneFallOff(), ant.getStepsWalked()));
 
 				// If the nest is reached, set carrying food to false
 				if (getGrid().getNode(ant.getPosition()) instanceof Nest) {
 					ant.setCarryingFood(false);
 					ant.resetStepsWalked();
 					increaseFoodGathered();
-					ant.turnAround();
 				}
 
 				// If another FoodSource is visited, reset stepsWalked
@@ -106,13 +105,12 @@ public class TwoPheromoneExample extends Model {
 			} else {
 				// Deposit pheromone one
 				getGrid().getNode(ant.getPosition()).increasePheromoneBy(PHEROMONE_ONE,
-						getPheromoneStrength() / (ant.getStepsWalked() / getPheromoneFallOff()));
+						getPheromoneStrength() * Math.pow(1 - getPheromoneFallOff(), ant.getStepsWalked()));
 
 				// If a FoodSource is reached, set carrying food to true
 				if (getGrid().getNode(ant.getPosition()) instanceof FoodSource) {
 					ant.setCarryingFood(true);
 					ant.resetStepsWalked();
-					ant.turnAround();
 				}
 
 				// If the Nest is visited again, reset stepsWalked

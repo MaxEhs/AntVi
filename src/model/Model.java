@@ -42,10 +42,10 @@ public abstract class Model {
 
 		// DEFAULT VALUES
 		setAntCount(0);
-		setPheromoneStrength(8.0);
-		setEvaporationSpeed(0.95);
-		setRandomMoveChance(0.01);
-		setPheromoneFallOff(65.0);
+		setPheromoneStrength(25.0D);
+		setEvaporationSpeed(0.50D);
+		setRandomMoveChance(0.01D);
+		setPheromoneFallOff(0.020D);
 	}
 
 	/**
@@ -241,16 +241,17 @@ public abstract class Model {
 
 	/**
 	 * Sets the amount of pheromone falloff - This mechanic is disabled if the
-	 * falloff amount is smaller than 1.
+	 * falloff amount is smaller than 0,01.
 	 * 
 	 * @param pheromoneFallOff the new amount of pheromone falloff
 	 */
 	public final void setPheromoneFallOff(double pheromoneFallOff) {
-		if (pheromoneFallOff < 1) {
+		if (pheromoneFallOff < 0.001) {
 			usingFallOff = false;
+			this.pheromoneFallOff = 0;
 		} else {
 			usingFallOff = true;
-			this.pheromoneFallOff = 100 - pheromoneFallOff;
+			this.pheromoneFallOff = pheromoneFallOff;
 		}
 	}
 
