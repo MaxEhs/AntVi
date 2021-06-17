@@ -114,7 +114,9 @@ public class Grid {
 		}
 	}
 
+	
 	public synchronized void onMouseMove(MouseEvent e) {
+		//TODO This needs to be made more performant and elegant...
 		// Update GridNodes based on mouse position
 		synchronized (nodes) {
 			for (int x = 0; x < cellCount; x++) {
