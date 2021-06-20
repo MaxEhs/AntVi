@@ -1,2 +1,2 @@
-The AntVi Project
+The Ant Visualization Project (AntVi)
 © Max Ehringhausen, 2021
