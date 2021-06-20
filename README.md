@@ -1,4 +1,4 @@
-The Ant Visualization Project (AntVi)
+# The Ant Visualization Project (AntVi)
 © Max Ehringhausen, 2021
 
 ## Dependencies
